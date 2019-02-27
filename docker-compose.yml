@@ -1,0 +1,16 @@
+version: "2"
+services:
+  app:
+    build: .
+    networks:
+      - redis_app
+    volumes:
+      - .:/data
+    ports:
+      - "5000:5000"
+  redis:
+    image: redis
+    networks: 
+      - redis_app
+networks:
+  redis_app:
