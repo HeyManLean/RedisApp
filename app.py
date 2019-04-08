@@ -16,7 +16,7 @@ def index():
     redis_db.incr(key)
     value = redis_db.get(key)
     
-    return 'I have been show for %s times' % int(value)
+    return 'I have been show for %s times!' % int(value)
 
 
 if __name__ == '__main__':
