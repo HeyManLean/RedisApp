@@ -1,4 +1,21 @@
 # -*- coding: utf-8 -*-
+"""
+Article:
+    - `time:` 发布时间(排序， zset)
+    - `score:` 评分(排序，zset)
+
+Article_content:
+    {
+        "title": "",
+        "link": "",
+        "poster": "",
+        "time": 1522211222,
+        "votes": 1
+    }
+Group_article:
+    - `group:programming`: 分类文章组（set）
+    
+"""
 import time
 
 from app import redis_db
