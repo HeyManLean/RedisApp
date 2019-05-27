@@ -14,5 +14,17 @@ services:
       - "6379:6379"
     networks: 
       - redis_app
+  redis01:
+    image: redis
+    ports:
+      - "6377:6379"
+    networks: 
+      - redis_app
+  redis02:
+    image: redis
+    ports:
+      - "6378:6379"
+    networks: 
+      - redis_app
 networks:
   redis_app:
