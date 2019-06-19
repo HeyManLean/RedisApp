@@ -3,6 +3,7 @@ from flask import request, jsonify
 
 from ad import ad_mod
 from ad.services import add_ad, get_ad, remove_ad
+from base import Argument, parse_args
 
 
 @ad_mod.route('/', methods=['POST'])
@@ -30,3 +31,13 @@ def _get_ad(ad_id):
 def _remove_ad(ad_id):
     remove_ad(ad_id)
     return jsonify({})
+
+
+@ad_mod.route('/test')
+@parse_args(
+    Argument('name', default='ABC', choices=('ABC', 'abc'), required=True),
+    Argument('age', type=int, help='age: (1, 100)', required=True)
+)
+def test():
+    params = request.params
+    return jsonify(params)

@@ -3,19 +3,9 @@
 数据库相关工具
 """
 import abc
-import logging
 from datetime import datetime
 
 from utils.timetool import utc_time_to_local, local_time_to_utc, iosformat
-
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    filename='app.log',
-    filemode='w',
-    datefmt='%b %d-%Y %H:%M:%S',
-    format='%(message)s'
-)
 
 
 class BaseField(object):
