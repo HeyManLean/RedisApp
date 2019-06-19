@@ -1,30 +1,33 @@
 version: "2"
 services:
-  app:
-    build: .
-    networks:
-      - redis_app
-    volumes:
-      - .:/data
-    ports:
-      - "5000:5000"
+  # app:
+  #   build: .
+  #   networks:
+  #     - my_app
+  #   volumes:
+  #     - .:/data
+  #   ports:
+  #     - "5000:5000"
   redis:
     image: redis
     ports:
       - "6379:6379"
     networks: 
-      - redis_app
-  redis01:
-    image: redis
+      - my_app
+  mongo:
+    image: mongo
     ports:
-      - "6377:6379"
-    networks: 
-      - redis_app
-  redis02:
-    image: redis
-    ports:
-      - "6378:6379"
-    networks: 
-      - redis_app
+      - "27017:27017"
+    networks:
+      - my_app
+  # mysql:
+  #   image: mysql
+  #   ports:
+  #     - "3306:3306"
+  #   networks:
+  #     - my_app
+  #   restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: 123456
 networks:
-  redis_app:
+  my_app:
