@@ -2,4 +2,4 @@
 .env*
 .log*
 .pyc*
-*/__pychache__
+# __pycache__
