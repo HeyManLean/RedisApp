@@ -51,9 +51,19 @@ def remove_ad(ad_id):
     return True
 
 
-def index_ad(ad_id, content, locations):
-    """广告索引建立"""
+def index_ad(ad_id, content, locations, type, value):
+    """广告索引建立
+    
+    Args:
+        ad_id (str): 广告id
+        content (str): 广告内容
+        locations (list): 地区列表, 如 guangzhou, shanghai, yangjiang
+        type (str): 广告类型, cpm, cpc, cpa
+        value (int): 广告价格
+    """
     words = tokenize(content)
+
+    
 
 
 def target_ads():
