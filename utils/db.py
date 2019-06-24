@@ -4,6 +4,7 @@
 """
 import abc
 from datetime import datetime
+import uuid
 
 from utils.timetool import utc_time_to_local, local_time_to_utc, iosformat
 
@@ -75,6 +76,9 @@ class DatetimeField(ValidatedField):
 
 
 class DbModelMeta(type):
+    __fields__ = set()
+    __index_keys__ = set()
+
     def __init__(cls, name, bases, attr_dict):
         super().__init__(name, bases, attr_dict)
         if not all([cls.__db__, cls.__tablename__]):
@@ -106,8 +110,6 @@ MONGO_METHODS = [
 class DbModel(metaclass=DbModelMeta):
     __db__ = None
     __tablename__ = None
-    __fields__ = set()
-    __index_keys__ = set()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -229,3 +231,43 @@ class DbModel(metaclass=DbModelMeta):
             return cls.__table__.find_one(filter_dict, sort=sort_list)
 
         return cls.__table__.find_one(filter_dict)
+
+
+def _zset_common(db, method, scores, ttl=30, **kw):
+    id = 'idx:' + str(uuid.uuid4())
+    execute = kw.pop('_execute', True)  # 是否有 excute
+    pipeline = db.pipeline if execute else db
+
+    getattr(pipeline, method)(id, scores, **kw)
+    pipeline.expire(id, ttl)
+    if execute:
+        pipeline.execute()
+    return id
+
+
+def zintersect(db, items, ttl=30, **kw):
+    return _zset_common(db, 'zinterstore', dict(items), ttl, **kw)
+
+
+def zunion(db, items, ttl=30, **kw):
+    return _zset_common(db, 'zunionstore', dict(items), ttl, **kw)
+
+
+def _set_common(db, method, items, ttl=30, **kw):
+    id = 'idx:' + str(uuid.uuid4())
+    execute = kw.pop('_execute', True)  # 是否有 excute
+    pipeline = db.pipeline if execute else db
+
+    getattr(pipeline, method)(id, items, **kw)
+    pipeline.expire(id, ttl)
+    if execute:
+        pipeline.execute()
+    return id
+
+
+def intersect(db, items, ttl=30, **kw):
+    return _zset_common(db, 'sinterstore', dict(items), ttl, **kw)
+
+
+def union(db, items, ttl=30, **kw):
+    return _zset_common(db, 'sunionstore', dict(items), ttl, **kw)

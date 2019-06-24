@@ -235,7 +235,7 @@ def index_ad(id, locations, content, type, value):
 
     rvalue = TO_ECPM[type](
         1000, AVERAGE_PER_1K.get(type, 1), value)
-    pipeline.hset('type:' + id, type)
+    pipeline.hset('type:', id, type)
     pipeline.zadd('idx:ad:value:', id, rvalue)  # eCPM(可附加)
     pipeline.zadd('ad:base_value:', id, value)  # 所有ad的基本价格(查询表)
     pipeline.sadd('terms:' + id, *list(words))  # 记录广告所有的单词, 可以用于移除或更新广告
@@ -270,7 +270,7 @@ def match_location(locations):
 
 def finish_scoring(matched, base, content):
     """找到跟内容匹配的广告, 并加上附加值的 eCPM"""
-    bonus_ecpm = []
+    bonus_ecpm = {}
     words = tokenize(content)
     for word in words:
         word_bonus = zintersect({word: 1, matched: 0})
@@ -281,7 +281,7 @@ def finish_scoring(matched, base, content):
         maximum = zunion(bonus_ecpm, aggregate='MAX')
 
         return words, zunion({
-            base: 1, minimum: 1, maximum: 1
+            base: 1, minimum: .5, maximum: .5
         })
     return words, base
 
