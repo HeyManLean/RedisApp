@@ -4,7 +4,7 @@ from datetime import datetime
 from app import redis_db
 from ad.models import Ad
 from utils.words import tokenize
-from utils.db import zunion, zintersect, union, intersect
+from utils.db import zunion, zintersect, union
 
 
 def gen_ad_id():
@@ -101,44 +101,152 @@ def index_ad(ad_id, locations, content, type, value):
 
 def target_ads(locations, content):
     """广告定向"""
-    matched_ads, base_ecpm = match_location(locations)
+    pipeline = redis_db.pipeline()
+
+    matched_ads, base_ecpm = match_location(pipeline, locations)
     words, target_ads = finish_scoring(matched_ads, base_ecpm, content)
 
-    ad_id = redis_db.zrevrange(target_ads, 0, 0)
+    pipeline.incr('ad:served:')  # 相当于生成一个订单
+    pipeline.zrevrange(target_ads, 0, 0)
+
+    target_id, targeted_ad = pipeline.execute()[-2:]
+    if not targeted_ad:
+        return None, None
+
+    ad_id = targeted_ad[0]
     record_targeting_result(target_id, ad_id, words)
-    return ad_id
+
+    return target_id, ad_id
 
 
-def match_location(locations):
+def match_location(pipe, locations):
     location_items = ['idx:loc:' + location for location in locations]
-    matched_ads = union(redis_db, location_items)
-    return matched_ads, zintersect(
-        redis_db, {matched_ads: 0, 'ad:ad_value:': 1})
+    matched_ads = union(pipe, location_items, _execute=False)
+    base_ecpm = zintersect(
+        pipe, {matched_ads: 0, 'ad:ad_value:': 1}, _execute=False)
+    return matched_ads, base_ecpm
 
 
-def finish_scoring(matched, base, content):
+def finish_scoring(pipe, matched, base, content):
     words = tokenize(content)
     bonus_ecpm = {}
     for word in words:
-        word_bonu = zintersect(redis_db, {word: 1, matched: 0})
+        word_key = 'idx:word:' + word
+        word_bonu = zintersect(pipe, {word_key: 1, matched: 0}, _execute=False)
         bonus_ecpm[word_bonu] = 1
 
     if bonus_ecpm:
-        maximum = zunion(redis_db, bonus_ecpm, aggregate='MAX')
-        minimum = zunion(redis_db, bonus_ecpm, aggregate='MIN')
+        maximum = zunion(redis_db, bonus_ecpm, aggregate='MAX', _execute=False)
+        minimum = zunion(redis_db, bonus_ecpm, aggregate='MIN', _execute=False)
 
-        return words, zunion(redis_db, {maximum: 0.5, minimum: 0.5, base: 1})
+        target_ads = zunion(
+            redis_db, {maximum: 0.5, minimum: 0.5, base: 1}, _execute=False)
+        return words, target_ads
 
-    return word, base
+    return words, base
 
 
 def record_targeting_result(target_id, ad_id, words):
     """记录广告定向结果"""
+    pipeline = redis_db.pipeline()
+    terms = redis_db.smembers('ad:terms:' + ad_id)
+    matched = list(terms & words)
+
+    # 记录此次匹配的结果的命中单词
+    if matched:
+        matched_key = 'terms:matched:' + target_id
+        pipeline.sadd(matched_key, *matched)
+        pipeline.expire(matched_key, 900)
+
+    # 更新类型查看次数
+    type = redis_db.hget('ad:type:', ad_id)
+    pipeline.incr('type:%s:views:' % type)
+
+    # 更新广告每个单词查看次数, 以及总次数
+    for word in matched:
+        pipeline.zincrby('views:' + ad_id, word)
+    pipeline.zincrby('views:' + ad_id, '')
+
+    if not pipeline.execute()[-1] % 100:
+        update_cpms(ad_id)
 
 
-def record_click():
+def record_click(target_id, ad_id, action=False):
     """记录广告点击"""
+    pipeline = redis_db.pipeline()
+
+    clicked_key = 'clicks:' + ad_id
+    matched_key = 'terms:matched:' + target_id
+
+    type = redis_db.hget('ad:type:', ad_id)
+    if type == 'cpa':
+        pipeline.expire(matched_key, 900)
+        if action:
+            clicked_key = 'actions:' + ad_id
+
+    # 更新类型点击次数
+    if action and type == 'cpa':
+        pipeline.incr('type:%s:actions:' % type)
+    else:
+        pipeline.incr('type:%s:clicks:' % type)
+
+    # 对于有效结果的单词, 更新点击次数及总次数
+    matched = list(redis_db.smembers(matched_key))
+    matched.append('')
+    for word in matched:
+        pipeline.zincrby(clicked_key, word)
+
+    pipeline.execute()
+
+    update_cpms(ad_id)
 
 
-def update_ecpm():
+def update_cpms(ad_id):
     """更新广告的ecpm"""
+    pipeline = redis_db.pipeline()
+
+    pipeline.hget('ad:type:', ad_id)
+    pipeline.zscore('ad:base_value:', ad_id)
+    pipeline.smembers('terms:' + ad_id)
+
+    type, base_value, words = pipeline.execute()
+
+    which = 'clicks'
+    if type == 'cpa':
+        which = 'actions'
+
+    pipeline.get('type:%s:views' % type)
+    pipeline.get('type:%s:%s' % (type, which))
+    type_views, type_clicks = pipeline.execute()
+    AVERAGE_PER_1K[type] = (
+        1000. * int(type_clicks or '1') / int(type_views or '1'))
+
+    if type == 'cpm':
+        return
+
+    view_key = 'views:' + ad_id
+    click_key = '%s:%s' % (which, ad_id)
+
+    to_ecpm = TO_ECPM[type]
+    pipeline.zscore(view_key, '')
+    pipeline.zscore(click_key, '')
+    ad_views, ad_clicks = pipeline.execute()
+    if (ad_clicks or 0) < 1:
+        ad_ecpm = pipeline.zscore('ad:ad_value:', ad_id)
+    else:
+        ad_ecpm = to_ecpm(ad_views or 1, ad_clicks or 0, base_value)
+        pipeline.zadd('ad:ad_value:', ad_id, ad_ecpm)
+
+    for word in words:
+        pipeline.zscore(view_key, word)
+        pipeline.zscore(click_key, word)
+        views, clicks = pipeline.execute()
+
+        if (clicks or 0) < 1:
+            continue
+
+        word_ecpm = to_ecpm(views or 1, clicks or 0, base_value)
+        bonus = word_ecpm - ad_ecpm
+        pipeline.zadd('idx:' + word, ad_id, bonus)
+
+    pipeline.execute()

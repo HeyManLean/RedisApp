@@ -233,10 +233,10 @@ class DbModel(metaclass=DbModelMeta):
         return cls.__table__.find_one(filter_dict)
 
 
-def _zset_common(db, method, scores, ttl=30, **kw):
+def _zset_common(conn, method, scores, ttl=30, **kw):
     id = 'idx:' + str(uuid.uuid4())
     execute = kw.pop('_execute', True)  # 是否有 excute
-    pipeline = db.pipeline if execute else db
+    pipeline = conn.pipeline if execute else conn
 
     getattr(pipeline, method)(id, scores, **kw)
     pipeline.expire(id, ttl)
@@ -245,18 +245,18 @@ def _zset_common(db, method, scores, ttl=30, **kw):
     return id
 
 
-def zintersect(db, items, ttl=30, **kw):
-    return _zset_common(db, 'zinterstore', dict(items), ttl, **kw)
+def zintersect(conn, items, ttl=30, **kw):
+    return _zset_common(conn, 'zinterstore', dict(items), ttl, **kw)
 
 
-def zunion(db, items, ttl=30, **kw):
-    return _zset_common(db, 'zunionstore', dict(items), ttl, **kw)
+def zunion(conn, items, ttl=30, **kw):
+    return _zset_common(conn, 'zunionstore', dict(items), ttl, **kw)
 
 
-def _set_common(db, method, items, ttl=30, **kw):
+def _set_common(conn, method, items, ttl=30, **kw):
     id = 'idx:' + str(uuid.uuid4())
     execute = kw.pop('_execute', True)  # 是否有 excute
-    pipeline = db.pipeline if execute else db
+    pipeline = conn.pipeline if execute else conn
 
     getattr(pipeline, method)(id, items, **kw)
     pipeline.expire(id, ttl)
@@ -265,9 +265,9 @@ def _set_common(db, method, items, ttl=30, **kw):
     return id
 
 
-def intersect(db, items, ttl=30, **kw):
-    return _zset_common(db, 'sinterstore', dict(items), ttl, **kw)
+def intersect(conn, items, ttl=30, **kw):
+    return _zset_common(conn, 'sinterstore', dict(items), ttl, **kw)
 
 
-def union(db, items, ttl=30, **kw):
-    return _zset_common(db, 'sunionstore', dict(items), ttl, **kw)
+def union(conn, items, ttl=30, **kw):
+    return _zset_common(conn, 'sunionstore', dict(items), ttl, **kw)
