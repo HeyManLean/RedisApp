@@ -109,12 +109,16 @@ def target_ads(locations, content):
     pipeline = redis_db.pipeline()
 
     matched_ads, base_ecpm = match_location(pipeline, locations)
-    words, target_ads = finish_scoring(matched_ads, base_ecpm, content)
+    words, target_ads = finish_scoring(
+        pipeline, matched_ads, base_ecpm, content)
 
     pipeline.incr('ad:served:')  # 相当于生成一个订单
     pipeline.zrevrange(target_ads, 0, 0)
 
     target_id, targeted_ad = pipeline.execute()[-2:]
+
+    print(locations, matched_ads, target_id, targeted_ad, words)
+    print(redis_db.smembers(matched_ads))
     if not targeted_ad:
         return None, None
 
@@ -257,7 +261,7 @@ def update_cpms(ad_id):
     pipeline.execute()
 
 
-MAX_SCORE = 256 * 256 * 256 * 256
+MAX_SCORE = ip_to_score('255.255.255.255')
 
 
 def ip_to_location(ip: str) -> str:
@@ -265,9 +269,8 @@ def ip_to_location(ip: str) -> str:
     score = ip_to_score(ip)
     match = redis_db.zrangebyscore(
         'ip_location:', score, MAX_SCORE, 0, 1, withscores=True)
+
     if not match:
         return None
-
     else:
-        print(ip, score, match)
         return match[0][0]

@@ -163,3 +163,23 @@
 [WARNING][122] 2019-06-25 20:43:11 -  * Debugger is active!
 [INFO][122] 2019-06-25 20:43:11 -  * Debugger PIN: 260-306-550
 [INFO][122] 2019-06-25 20:43:13 - 127.0.0.1 - - [25/Jun/2019 20:43:13] "POST /ads/target HTTP/1.1" 200 -
+[INFO][122] 2019-06-25 21:55:16 -  * Restarting with stat
+[WARNING][122] 2019-06-25 21:55:19 -  * Debugger is active!
+[INFO][122] 2019-06-25 21:55:19 -  * Debugger PIN: 213-118-475
+[INFO][122] 2019-06-25 21:55:19 -  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+[INFO][122] 2019-06-25 21:55:22 - 127.0.0.1 - - [25/Jun/2019 21:55:22] "POST /ads/target HTTP/1.1" 500 -
+[INFO][122] 2019-06-25 22:14:48 - 127.0.0.1 - - [25/Jun/2019 22:14:48] "POST /ads/target HTTP/1.1" 200 -
+[INFO][122] 2019-06-25 22:30:31 -  * Restarting with stat
+[WARNING][122] 2019-06-25 22:30:35 -  * Debugger is active!
+[INFO][122] 2019-06-25 22:30:35 -  * Debugger PIN: 213-118-475
+[INFO][122] 2019-06-25 22:30:35 -  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+[INFO][122] 2019-06-25 23:25:05 -  * Restarting with stat
+[WARNING][122] 2019-06-25 23:25:08 -  * Debugger is active!
+[INFO][122] 2019-06-25 23:25:08 -  * Debugger PIN: 213-118-475
+[INFO][122] 2019-06-25 23:25:08 -  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+[INFO][122] 2019-06-25 23:25:09 - 127.0.0.1 - - [25/Jun/2019 23:25:09] "POST /ads/target HTTP/1.1" 200 -
+[INFO][122] 2019-06-25 23:25:12 - 127.0.0.1 - - [25/Jun/2019 23:25:12] "POST /ads/target HTTP/1.1" 200 -
+[INFO][122] 2019-06-25 23:25:15 - 127.0.0.1 - - [25/Jun/2019 23:25:15] "POST /ads/target HTTP/1.1" 200 -
+[INFO][122] 2019-06-25 23:29:29 - 127.0.0.1 - - [25/Jun/2019 23:29:29] "POST /ads/target HTTP/1.1" 200 -
+[INFO][122] 2019-06-25 23:30:05 -  * Detected change in 'D:\\Projects\\RedisApp\\app.py', reloading
+[INFO][122] 2019-06-25 23:30:05 -  * Restarting with stat

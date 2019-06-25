@@ -111,11 +111,12 @@ def parse_args(*arguments):
     def middle(func):
         @wraps(func)
         def decorated_func(*args, **kwargs):
+            import time
+            s_time = time.time()
             for argument in arguments:
                 value, valid = argument.load()
                 if valid:
                     request._params[argument.name] = value
-
             return func(*args, **kwargs)
         return decorated_func
     return middle

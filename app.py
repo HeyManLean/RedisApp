@@ -13,14 +13,14 @@ from base.base_request import MyRequest
 from base.response import render_response
 
 
-dirpath = os.path.abspath(os.path.dirname(__file__))
-logging.basicConfig(
-    level=logging.DEBUG,
-    filename=os.path.join(dirpath, 'app.log'),
-    filemode='a+',
-    datefmt='%Y-%m-%d %H:%M:%S',
-    format='[%(levelname)s][%(lineno)s] %(asctime)s - %(message)s'
-)
+# dirpath = os.path.abspath(os.path.dirname(__file__))
+# logging.basicConfig(
+#     level=logging.DEBUG,
+#     filename=os.path.join(dirpath, 'app.log'),
+#     filemode='a+',
+#     datefmt='%Y-%m-%d %H:%M:%S',
+#     format='[%(levelname)s][%(lineno)s] %(asctime)s - %(message)s'
+# )
 
 
 def create_app():

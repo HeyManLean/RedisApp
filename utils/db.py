@@ -275,8 +275,8 @@ def _set_common(conn, method, items, ttl=30, **kw):
 
 
 def intersect(conn, items, ttl=30, **kw):
-    return _zset_common(conn, 'sinterstore', dict(items), ttl, **kw)
+    return _zset_common(conn, 'sinterstore', items, ttl, **kw)
 
 
 def union(conn, items, ttl=30, **kw):
-    return _zset_common(conn, 'sunionstore', dict(items), ttl, **kw)
+    return _set_common(conn, 'sunionstore', items, ttl, **kw)

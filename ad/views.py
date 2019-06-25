@@ -28,10 +28,11 @@ def _add_ad():
 )
 def _target_ads():
     locations = []
-    loc = ip_to_location('59.41.162.57' or request.ip)
+    loc = ip_to_location('59.42.120.121' or request.ip)
+
     if loc:
         locations.append(loc)
-    # data = target_ads(locations, **request.params)
+    data = target_ads(locations, request.params['content'])
     data = locations
     return jsonify(data)
 
