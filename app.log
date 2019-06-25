@@ -52,3 +52,114 @@
 [INFO][122] 2019-06-25 07:40:31 -  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
 [INFO][56] 2019-06-25 07:40:34 - {'code': 10001, 'errmsg': '≤Œ ˝ºÏ—È ß∞‹!', 'help': '`name` is required! '}
 [INFO][122] 2019-06-25 07:40:34 - 127.0.0.1 - - [25/Jun/2019 07:40:34] "POST /ads/add HTTP/1.1" 200 -
+[INFO][122] 2019-06-25 17:11:14 -  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+[INFO][122] 2019-06-25 17:11:14 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:11:14 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:11:14 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:14:57 - 127.0.0.1 - - [25/Jun/2019 17:14:57] "POST /ads/add HTTP/1.1" 500 -
+[INFO][122] 2019-06-25 17:15:31 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/views.py', reloading
+[INFO][122] 2019-06-25 17:15:31 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:15:32 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:15:32 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:15:34 - 127.0.0.1 - - [25/Jun/2019 17:15:34] "POST /ads/add HTTP/1.1" 500 -
+[INFO][122] 2019-06-25 17:15:48 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/views.py', reloading
+[INFO][122] 2019-06-25 17:15:48 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:15:49 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:15:49 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:16:51 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/base/__init__.py', reloading
+[INFO][122] 2019-06-25 17:16:52 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:16:52 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:16:52 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:17:20 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/base/__init__.py', reloading
+[INFO][122] 2019-06-25 17:17:20 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:17:21 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:17:21 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:17:27 - 127.0.0.1 - - [25/Jun/2019 17:17:27] "POST /ads/add HTTP/1.1" 500 -
+[INFO][122] 2019-06-25 17:18:05 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/utils/db.py', reloading
+[INFO][122] 2019-06-25 17:18:06 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:18:06 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:18:06 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:18:07 - 127.0.0.1 - - [25/Jun/2019 17:18:07] "POST /ads/add HTTP/1.1" 500 -
+[INFO][122] 2019-06-25 17:18:31 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/utils/words.py', reloading
+[INFO][122] 2019-06-25 17:18:32 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:18:32 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:18:32 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:18:34 - 127.0.0.1 - - [25/Jun/2019 17:18:34] "POST /ads/add HTTP/1.1" 500 -
+[INFO][122] 2019-06-25 17:18:43 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/utils/words.py', reloading
+[INFO][122] 2019-06-25 17:18:44 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:18:44 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:18:44 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:18:54 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/views.py', reloading
+[INFO][122] 2019-06-25 17:18:55 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:18:55 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:18:55 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:18:56 - 127.0.0.1 - - [25/Jun/2019 17:18:56] "POST /ads/add HTTP/1.1" 500 -
+[INFO][122] 2019-06-25 17:19:22 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/services.py', reloading
+[INFO][122] 2019-06-25 17:19:23 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:19:23 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:19:23 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:19:37 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/services.py', reloading
+[INFO][122] 2019-06-25 17:19:38 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:19:38 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:19:38 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:19:44 - 127.0.0.1 - - [25/Jun/2019 17:19:44] "POST /ads/add HTTP/1.1" 500 -
+[INFO][122] 2019-06-25 17:20:01 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/views.py', reloading
+[INFO][122] 2019-06-25 17:20:02 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:20:02 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:20:02 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:20:17 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/services.py', reloading
+[INFO][122] 2019-06-25 17:20:18 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:20:18 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:20:18 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:20:20 - 127.0.0.1 - - [25/Jun/2019 17:20:20] "POST /ads/add HTTP/1.1" 500 -
+[INFO][122] 2019-06-25 17:20:59 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/services.py', reloading
+[INFO][122] 2019-06-25 17:20:59 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:20:59 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:20:59 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:21:13 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/services.py', reloading
+[INFO][122] 2019-06-25 17:21:14 -  * Restarting with stat
+[WARNING][122] 2019-06-25 17:21:14 -  * Debugger is active!
+[INFO][122] 2019-06-25 17:21:14 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 17:21:16 - 127.0.0.1 - - [25/Jun/2019 17:21:16] "POST /ads/add HTTP/1.1" 200 -
+[INFO][122] 2019-06-25 17:21:29 - 127.0.0.1 - - [25/Jun/2019 17:21:29] "POST /ads/add HTTP/1.1" 200 -
+[INFO][122] 2019-06-25 20:01:10 - 127.0.0.1 - - [25/Jun/2019 20:01:10] "POST /ads/add HTTP/1.1" 200 -
+[INFO][122] 2019-06-25 20:27:14 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/services.py', reloading
+[INFO][122] 2019-06-25 20:27:14 -  * Restarting with stat
+[WARNING][122] 2019-06-25 20:27:15 -  * Debugger is active!
+[INFO][122] 2019-06-25 20:27:15 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 20:38:20 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/services.py', reloading
+[INFO][122] 2019-06-25 20:38:20 -  * Restarting with stat
+[WARNING][122] 2019-06-25 20:38:21 -  * Debugger is active!
+[INFO][122] 2019-06-25 20:38:21 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 20:40:36 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/views.py', reloading
+[INFO][122] 2019-06-25 20:40:36 -  * Restarting with stat
+[WARNING][122] 2019-06-25 20:40:37 -  * Debugger is active!
+[INFO][122] 2019-06-25 20:40:37 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 20:40:46 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/views.py', reloading
+[INFO][122] 2019-06-25 20:40:46 -  * Restarting with stat
+[WARNING][122] 2019-06-25 20:40:47 -  * Debugger is active!
+[INFO][122] 2019-06-25 20:40:47 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 20:40:59 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/views.py', reloading
+[INFO][122] 2019-06-25 20:40:59 -  * Restarting with stat
+[WARNING][122] 2019-06-25 20:41:00 -  * Debugger is active!
+[INFO][122] 2019-06-25 20:41:00 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 20:41:07 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/services.py', reloading
+[INFO][122] 2019-06-25 20:41:07 -  * Restarting with stat
+[WARNING][122] 2019-06-25 20:41:08 -  * Debugger is active!
+[INFO][122] 2019-06-25 20:41:08 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 20:41:49 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/views.py', reloading
+[INFO][122] 2019-06-25 20:41:50 -  * Restarting with stat
+[WARNING][122] 2019-06-25 20:41:50 -  * Debugger is active!
+[INFO][122] 2019-06-25 20:41:50 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 20:42:02 - 127.0.0.1 - - [25/Jun/2019 20:42:02] "POST /ads/target HTTP/1.1" 200 -
+[INFO][122] 2019-06-25 20:42:35 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/services.py', reloading
+[INFO][122] 2019-06-25 20:42:36 -  * Restarting with stat
+[WARNING][122] 2019-06-25 20:42:36 -  * Debugger is active!
+[INFO][122] 2019-06-25 20:42:36 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 20:42:37 - 127.0.0.1 - - [25/Jun/2019 20:42:37] "POST /ads/target HTTP/1.1" 200 -
+[INFO][122] 2019-06-25 20:42:41 - 127.0.0.1 - - [25/Jun/2019 20:42:41] "POST /ads/target HTTP/1.1" 200 -
+[INFO][122] 2019-06-25 20:43:11 -  * Detected change in '/Users/linliangbin/Projects/RedisApp/ad/views.py', reloading
+[INFO][122] 2019-06-25 20:43:11 -  * Restarting with stat
+[WARNING][122] 2019-06-25 20:43:11 -  * Debugger is active!
+[INFO][122] 2019-06-25 20:43:11 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 20:43:13 - 127.0.0.1 - - [25/Jun/2019 20:43:13] "POST /ads/target HTTP/1.1" 200 -

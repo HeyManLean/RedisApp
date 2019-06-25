@@ -56,7 +56,10 @@ class Argument(object):
         self.help = help
 
     def load(self):
-        """解析并检查参数取值"""
+        """解析并检查参数取值
+        Returns:
+            value(值), valid(是否有效)
+        """
         if self.by and hasattr(request, self.by):
             req_data = getattr(request, self.by)
         elif request.method == 'GET':
@@ -109,8 +112,9 @@ def parse_args(*arguments):
         @wraps(func)
         def decorated_func(*args, **kwargs):
             for argument in arguments:
-                value = argument.load()
-                request._params[argument.name] = value
+                value, valid = argument.load()
+                if valid:
+                    request._params[argument.name] = value
 
             return func(*args, **kwargs)
         return decorated_func

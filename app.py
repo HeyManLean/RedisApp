@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import logging
+import os
 
 from flask import Flask
 from redis import Redis
@@ -12,9 +13,10 @@ from base.base_request import MyRequest
 from base.response import render_response
 
 
+dirpath = os.path.abspath(os.path.dirname(__file__))
 logging.basicConfig(
     level=logging.DEBUG,
-    filename='app.log',
+    filename=os.path.join(dirpath, 'app.log'),
     filemode='a+',
     datefmt='%Y-%m-%d %H:%M:%S',
     format='[%(levelname)s][%(lineno)s] %(asctime)s - %(message)s'

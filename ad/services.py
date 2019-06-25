@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-from app import redis_db
-from ad.models import Ad
 from utils.words import tokenize
 from utils.db import zunion, zintersect, union
+from utils.ip import ip_to_score
+from app import redis_db
+from ad.models import Ad
+
 
 
 def gen_ad_id():
@@ -17,7 +19,7 @@ def get_ad(ad_id):
     return ad
 
 
-def add_ad(name, type, value, content, locations):
+def add_ad(name, locations, content, type, value):
     ad_id = gen_ad_id()
     ad = Ad()
     ad.ad_id = ad_id
@@ -35,7 +37,7 @@ def add_ad(name, type, value, content, locations):
     ad.save_new()
 
     # 建立广告搜索索引
-    index_ad(ad_id, content, locations, type, value)
+    index_ad(ad_id, locations, content, type, value)
 
     return data
 
@@ -85,6 +87,7 @@ def index_ad(ad_id, locations, content, type, value):
     """
     pipeline = redis_db.pipeline()
     words = tokenize(content)
+
     for word in words:
         pipeline.sadd('idx:word:' + word, ad_id)
 
@@ -96,7 +99,7 @@ def index_ad(ad_id, locations, content, type, value):
     pipeline.zadd('ad:base_value:', {ad_id: value})
 
     rvalue = TO_ECPM[type](1000, AVERAGE_PER_1K.get(type, 1), value)
-    pipeline.zadd('ad:ad_value:', ad_id, rvalue)
+    pipeline.zadd('ad:ad_value:', {ad_id: rvalue})
     pipeline.execute()
     return True
 
@@ -252,3 +255,19 @@ def update_cpms(ad_id):
         pipeline.zadd('idx:' + word, ad_id, bonus)
 
     pipeline.execute()
+
+
+MAX_SCORE = 256 * 256 * 256 * 256
+
+
+def ip_to_location(ip: str) -> str:
+    """解析 ip 获取位置信息"""
+    score = ip_to_score(ip)
+    match = redis_db.zrangebyscore(
+        'ip_location:', score, MAX_SCORE, 0, 1, withscores=True)
+    if not match:
+        return None
+
+    else:
+        print(ip, score, match)
+        return match[0][0]

@@ -84,8 +84,6 @@ class DatetimeField(ValidatedField):
 
 
 class DbModelMeta(type):
-    __fields__ = set()
-    __index_keys__ = set()
 
     def __init__(cls, name, bases, attr_dict):
         super().__init__(name, bases, attr_dict)
@@ -118,6 +116,9 @@ MONGO_METHODS = [
 class DbModel(metaclass=DbModelMeta):
     __db__ = None
     __tablename__ = None
+
+    __fields__ = set()
+    __index_keys__ = set()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
