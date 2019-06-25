@@ -33,3 +33,22 @@
 [INFO][122] 2019-06-24 09:30:21 -  * Restarting with stat
 [WARNING][122] 2019-06-24 09:30:22 -  * Debugger is active!
 [INFO][122] 2019-06-24 09:30:22 -  * Debugger PIN: 260-306-550
+[INFO][122] 2019-06-25 07:37:43 -  * Restarting with stat
+[WARNING][122] 2019-06-25 07:37:45 -  * Debugger is active!
+[INFO][122] 2019-06-25 07:37:45 -  * Debugger PIN: 213-118-475
+[INFO][122] 2019-06-25 07:37:45 -  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+[INFO][122] 2019-06-25 07:38:37 - 127.0.0.1 - - [25/Jun/2019 07:38:37] "POST /ads HTTP/1.1" 500 -
+[INFO][122] 2019-06-25 07:39:15 - 127.0.0.1 - - [25/Jun/2019 07:39:15] "POST /ads HTTP/1.1" 500 -
+[INFO][122] 2019-06-25 07:39:41 -  * Restarting with stat
+[WARNING][122] 2019-06-25 07:39:43 -  * Debugger is active!
+[INFO][122] 2019-06-25 07:39:43 -  * Debugger PIN: 213-118-475
+[INFO][122] 2019-06-25 07:39:43 -  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+[INFO][122] 2019-06-25 07:39:43 - 127.0.0.1 - - [25/Jun/2019 07:39:43] "POST /ads HTTP/1.1" 500 -
+[INFO][122] 2019-06-25 07:39:50 - 127.0.0.1 - - [25/Jun/2019 07:39:50] "POST /ads HTTP/1.1" 500 -
+[INFO][122] 2019-06-25 07:40:28 -  * Detected change in 'D:\\Projects\\RedisApp\\ad\\views.py', reloading
+[INFO][122] 2019-06-25 07:40:28 -  * Restarting with stat
+[WARNING][122] 2019-06-25 07:40:31 -  * Debugger is active!
+[INFO][122] 2019-06-25 07:40:31 -  * Debugger PIN: 213-118-475
+[INFO][122] 2019-06-25 07:40:31 -  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+[INFO][56] 2019-06-25 07:40:34 - {'code': 10001, 'errmsg': '≤Œ ˝ºÏ—È ß∞‹!', 'help': '`name` is required! '}
+[INFO][122] 2019-06-25 07:40:34 - 127.0.0.1 - - [25/Jun/2019 07:40:34] "POST /ads/add HTTP/1.1" 200 -

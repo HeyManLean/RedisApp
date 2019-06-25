@@ -17,13 +17,15 @@ def get_ad(ad_id):
     return ad
 
 
-def add_ad(name, desc, content, locations):
+def add_ad(name, type, value, content, locations):
     ad_id = gen_ad_id()
     ad = Ad()
     ad.ad_id = ad_id
     ad.name = name
-    ad.desc = desc
+    ad.type = type
     ad.content = content
+    ad.locations = locations
+    ad.value = value
 
     ad.create_time = datetime.now()
     ad.update_time = datetime.now()
@@ -33,7 +35,7 @@ def add_ad(name, desc, content, locations):
     ad.save_new()
 
     # 建立广告搜索索引
-    index_ad(ad_id, content, locations)
+    index_ad(ad_id, content, locations, type, value)
 
     return data
 

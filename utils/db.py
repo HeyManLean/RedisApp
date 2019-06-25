@@ -54,6 +54,14 @@ class IntegerField(ValidatedField):
         return value
 
 
+class FloatField(ValidatedField):
+    def validate(self, instance, value):
+        if not isinstance(value, float):
+            raise ValueError('<%s: %s> must be a float!' % (
+                StringField.__name__, self._name))
+        return value
+
+
 class DatetimeField(ValidatedField):
     def validate(self, instance, value):
         if not isinstance(value, datetime):

@@ -6,17 +6,16 @@ from ad.services import add_ad, get_ad, remove_ad
 from base import Argument, parse_args
 
 
-@ad_mod.route('/', methods=['POST'])
+@ad_mod.route('/add', methods=['POST'])
+@parse_args(
+    Argument('name', required=True),
+    Argument('type', choices=('cpa', 'cpc', 'cpm'), default='cpm'),
+    Argument('value', type=float, required=True),
+    Argument('content', required=True),
+    Argument('locations', type=list, required=True),
+)
 def _add_ad():
-    params = request.json
-    data = add_ad(
-        name=params.get('name'),
-        desc=params.get('desc'),
-        content=params.get('content'),
-        locations=params.get('locations'),
-        type=params.get('type'),
-        value=params.get('value')
-    )
+    data = add_ad(**request.params)
     return jsonify(data)
 
 

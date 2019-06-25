@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from app import mongo_db
-from utils.db import DbModel, StringField, DatetimeField, IntegerField
-
+from utils.db import (
+    DbModel, StringField, DatetimeField,
+    BaseField, FloatField
+)
 
 
 class Ad(DbModel):
@@ -12,9 +14,10 @@ class Ad(DbModel):
     ad_id = StringField(index=True)
     name = StringField()
     type = StringField()
-    value = IntegerField()
+    value = FloatField()
 
     content = StringField()
+    locations = BaseField()
 
     create_time = DatetimeField()
     update_time = DatetimeField()

@@ -12,7 +12,7 @@ from .errors import ParamError
 
 class Argument(object):
     __slots__ = [
-        'name', 'type', 'required', 'default',
+        'name', 'type', 'required', 'default', 'discard',
         'ignore', 'choices', 'by', 'help', 'nullable'
     ]
 
@@ -26,6 +26,7 @@ class Argument(object):
         ignore=False,
         choices=None,
         by=None,
+        discard=False,
         help=''
     ):
         """请求参数对象
@@ -40,6 +41,7 @@ class Argument(object):
             choices (tuple): 可选值
             by (str): 访问数据源 args, json, form
                       默认 GET: args, POST: json
+            discard (bool): 不存在 key, 是否不解析参数
             help (str): 参数不匹配时, 返回提示
         """
         self.name = name
@@ -50,6 +52,7 @@ class Argument(object):
         self.choices = choices
         self.nullable = nullable
         self.by = by
+        self.discard = discard
         self.help = help
 
     def load(self):
@@ -70,6 +73,8 @@ class Argument(object):
             raise ParamError(
                 '`%s` is required! %s' % (self.name, self.help)
             )
+        elif self.discard:
+            return None, False
 
         # 检查是否非空
         if value is None:
@@ -92,7 +97,7 @@ class Argument(object):
                     self.name, self.choices, self.help)
             )
 
-        return value
+        return value, True
 
 
 def parse_args(*arguments):
