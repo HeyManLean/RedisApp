@@ -6,16 +6,16 @@ from ad.services import (
     add_ad, get_ad, remove_ad, record_click,
     target_ads, ip_to_location
 )
-from base import Argument, parse_args
+from base import Param, parse_params
 
 
 @ad_mod.route('/add', methods=['POST'])
-@parse_args(
-    Argument('name', required=True),
-    Argument('type', choices=('cpa', 'cpc', 'cpm'), default='cpm'),
-    Argument('value', type=float, required=True),
-    Argument('content', required=True),
-    Argument('locations', type=list, required=True),
+@parse_params(
+    Param('name', required=True),
+    Param('type', choices=('cpa', 'cpc', 'cpm'), default='cpm'),
+    Param('value', type=float, required=True),
+    Param('content', required=True),
+    Param('locations', type=list, required=True),
 )
 def _add_ad():
     data = add_ad(**request.params)
@@ -23,8 +23,8 @@ def _add_ad():
 
 
 @ad_mod.route('/target', methods=['POST'])
-@parse_args(
-    Argument('content', required=True)
+@parse_params(
+    Param('content', required=True)
 )
 def _target_ads():
     locations = []
@@ -43,9 +43,9 @@ def _target_ads():
 
 
 @ad_mod.route('/click', methods=['POST'])
-@parse_args(
-    Argument('target_id', required=True),
-    Argument('ad_id', required=True),
+@parse_params(
+    Param('target_id', required=True),
+    Param('ad_id', required=True),
 )
 def _click_ad():
     data = record_click(**request.params)
@@ -66,9 +66,9 @@ def _remove_ad(ad_id):
 
 
 @ad_mod.route('/test')
-@parse_args(
-    Argument('name', default='ABC', choices=('ABC', 'abc'), required=True),
-    Argument('age', type=int, help='age: (1, 100)', required=True)
+@parse_params(
+    Param('name', default='ABC', choices=('ABC', 'abc'), required=True),
+    Param('age', type=int, help='age: (1, 100)', required=True)
 )
 def test():
     params = request.params

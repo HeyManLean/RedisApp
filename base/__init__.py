@@ -10,7 +10,7 @@ from flask import request
 from .errors import ParamError
 
 
-class Argument(object):
+class Param(object):
     __slots__ = [
         'name', 'type', 'required', 'default', 'discard',
         'ignore', 'choices', 'by', 'help', 'nullable'
@@ -103,20 +103,18 @@ class Argument(object):
         return value, True
 
 
-def parse_args(*arguments):
+def parse_params(*params):
     """解析请求参数
     Args:
-        arguments: array of **Argument**
+        params: array of **Param**
     """
     def middle(func):
         @wraps(func)
         def decorated_func(*args, **kwargs):
-            import time
-            s_time = time.time()
-            for argument in arguments:
-                value, valid = argument.load()
+            for param in params:
+                value, valid = param.load()
                 if valid:
-                    request._params[argument.name] = value
+                    request._params[param.name] = value
             return func(*args, **kwargs)
         return decorated_func
     return middle

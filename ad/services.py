@@ -8,7 +8,6 @@ from app import redis_db
 from ad.models import Ad
 
 
-
 def gen_ad_id():
     key = 'counter:ad_id'
     return str(redis_db.incr(key))
@@ -116,7 +115,6 @@ def target_ads(locations, content):
     pipeline.zrevrange(target_ads, 0, 0)
 
     target_id, targeted_ad = pipeline.execute()[-2:]
-
     target_id = str(target_id)
 
     if not targeted_ad:
@@ -181,7 +179,7 @@ def record_targeting_result(target_id, ad_id, words):
         update_cpms(ad_id)
 
 
-def record_click(target_id, ad_id, action=False):
+def record_click(target_id, ad_id, action=True):
     """记录广告点击"""
     pipeline = redis_db.pipeline()
 
@@ -241,8 +239,9 @@ def update_cpms(ad_id):
     pipeline.zscore(view_key, '')
     pipeline.zscore(click_key, '')
     ad_views, ad_clicks = pipeline.execute()
+
     if (ad_clicks or 0) < 1:
-        ad_ecpm = pipeline.zscore('ad:ad_value:', ad_id)
+        ad_ecpm = redis_db.zscore('ad:ad_value:', ad_id)
     else:
         ad_ecpm = to_ecpm(ad_views or 1, ad_clicks or 0, base_value)
         pipeline.zadd('ad:ad_value:', {ad_id: ad_ecpm})
