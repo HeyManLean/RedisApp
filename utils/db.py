@@ -245,8 +245,8 @@ class DbModel(metaclass=DbModelMeta):
 def _zset_common(conn, method, scores, ttl=30, **kw):
     id = 'idx:' + str(uuid.uuid4())
     execute = kw.pop('_execute', True)  # 是否有 excute
-    pipeline = conn.pipeline if execute else conn
-
+    # pipeline = conn.pipeline() if execute else conn
+    pipeline = conn
     getattr(pipeline, method)(id, scores, **kw)
     pipeline.expire(id, ttl)
     if execute:
@@ -265,8 +265,8 @@ def zunion(conn, items, ttl=30, **kw):
 def _set_common(conn, method, items, ttl=30, **kw):
     id = 'idx:' + str(uuid.uuid4())
     execute = kw.pop('_execute', True)  # 是否有 excute
-    pipeline = conn.pipeline if execute else conn
-
+    # pipeline = conn.pipeline() if execute else conn
+    pipeline = conn
     getattr(pipeline, method)(id, items, **kw)
     pipeline.expire(id, ttl)
     if execute:

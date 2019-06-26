@@ -8,10 +8,10 @@ flake8 = "*"
 
 [packages]
 flask = "*"
-redis = "*"
 pymongo = "*"
 pymysql = "*"
 pytz = "*"
+redis = "*"
 
 [requires]
 python_version = "3.7"

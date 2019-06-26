@@ -3,7 +3,7 @@ from flask import request, jsonify
 
 from ad import ad_mod
 from ad.services import (
-    add_ad, get_ad, remove_ad,
+    add_ad, get_ad, remove_ad, record_click,
     target_ads, ip_to_location
 )
 from base import Argument, parse_args
@@ -29,11 +29,26 @@ def _add_ad():
 def _target_ads():
     locations = []
     loc = ip_to_location('59.42.120.121' or request.ip)
-
     if loc:
         locations.append(loc)
-    data = target_ads(locations, request.params['content'])
-    data = locations
+
+    target_id, ad_id = target_ads(locations, request.params['content'])
+    ad = get_ad(ad_id)
+    data = ad.to_json()
+
+    return jsonify({
+        'target_id': target_id,
+        'data': data
+    })
+
+
+@ad_mod.route('/click', methods=['POST'])
+@parse_args(
+    Argument('target_id', required=True),
+    Argument('ad_id', required=True),
+)
+def _click_ad():
+    data = record_click(**request.params)
     return jsonify(data)
 
 

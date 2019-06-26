@@ -117,8 +117,8 @@ def target_ads(locations, content):
 
     target_id, targeted_ad = pipeline.execute()[-2:]
 
-    print(locations, matched_ads, target_id, targeted_ad, words)
-    print(redis_db.smembers(matched_ads))
+    target_id = str(target_id)
+
     if not targeted_ad:
         return None, None
 
@@ -131,6 +131,7 @@ def target_ads(locations, content):
 def match_location(pipe, locations):
     location_items = ['idx:loc:' + location for location in locations]
     matched_ads = union(pipe, location_items, _execute=False)
+
     base_ecpm = zintersect(
         pipe, {matched_ads: 0, 'ad:ad_value:': 1}, _execute=False)
     return matched_ads, base_ecpm
@@ -145,11 +146,11 @@ def finish_scoring(pipe, matched, base, content):
         bonus_ecpm[word_bonu] = 1
 
     if bonus_ecpm:
-        maximum = zunion(redis_db, bonus_ecpm, aggregate='MAX', _execute=False)
-        minimum = zunion(redis_db, bonus_ecpm, aggregate='MIN', _execute=False)
+        maximum = zunion(pipe, bonus_ecpm, aggregate='MAX', _execute=False)
+        minimum = zunion(pipe, bonus_ecpm, aggregate='MIN', _execute=False)
 
         target_ads = zunion(
-            redis_db, {maximum: 0.5, minimum: 0.5, base: 1}, _execute=False)
+            pipe, {maximum: 0.5, minimum: 0.5, base: 1}, _execute=False)
         return words, target_ads
 
     return words, base
@@ -173,8 +174,8 @@ def record_targeting_result(target_id, ad_id, words):
 
     # 更新广告每个单词查看次数, 以及总次数
     for word in matched:
-        pipeline.zincrby('views:' + ad_id, word)
-    pipeline.zincrby('views:' + ad_id, '')
+        pipeline.zincrby('views:' + ad_id, 1, word)
+    pipeline.zincrby('views:' + ad_id, 1, '')
 
     if not pipeline.execute()[-1] % 100:
         update_cpms(ad_id)
@@ -203,7 +204,7 @@ def record_click(target_id, ad_id, action=False):
     matched = list(redis_db.smembers(matched_key))
     matched.append('')
     for word in matched:
-        pipeline.zincrby(clicked_key, word)
+        pipeline.zincrby(clicked_key, 1, word)
 
     pipeline.execute()
 
@@ -244,7 +245,7 @@ def update_cpms(ad_id):
         ad_ecpm = pipeline.zscore('ad:ad_value:', ad_id)
     else:
         ad_ecpm = to_ecpm(ad_views or 1, ad_clicks or 0, base_value)
-        pipeline.zadd('ad:ad_value:', ad_id, ad_ecpm)
+        pipeline.zadd('ad:ad_value:', {ad_id: ad_ecpm})
 
     for word in words:
         pipeline.zscore(view_key, word)
@@ -256,7 +257,7 @@ def update_cpms(ad_id):
 
         word_ecpm = to_ecpm(views or 1, clicks or 0, base_value)
         bonus = word_ecpm - ad_ecpm
-        pipeline.zadd('idx:' + word, ad_id, bonus)
+        pipeline.zadd('idx:' + word, {ad_id: bonus})
 
     pipeline.execute()
 
@@ -273,4 +274,4 @@ def ip_to_location(ip: str) -> str:
     if not match:
         return None
     else:
-        return match[0][0]
+        return match[0][0].split('_')[0]
