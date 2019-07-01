@@ -5,5 +5,3 @@
 from flask import Blueprint
 
 ad_mod = Blueprint('ad', __name__)
-
-from ad import views
