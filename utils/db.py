@@ -2,9 +2,13 @@
 """
 数据库相关工具
 """
+import time
+import math
 import abc
 from datetime import datetime
 import uuid
+
+from redis.exceptions import WatchError
 
 from utils.timetool import utc_time_to_local, local_time_to_utc, iosformat
 
@@ -280,3 +284,73 @@ def intersect(conn, items, ttl=30, **kw):
 
 def union(conn, items, ttl=30, **kw):
     return _set_common(conn, 'sunionstore', items, ttl, **kw)
+
+
+def acquire_lock(db, lockname, acquire_timeout=10):
+    """请求加锁
+
+    Args:
+        - db: db 连接
+        - lockname: 需要加锁的键名
+        - acquire_timeout: 加锁动作超时时间(类似 requests 的 timeout)
+    Returns:
+        - identifier (str): 动作标识
+    """
+    identifier = str(uuid.uuid4())
+    lockname = 'lock:' + lockname
+
+    end = time.time() + acquire_timeout
+    while time.time() < end:
+        if db.setnx(lockname, identifier):
+            return identifier
+
+        time.sleep(.001)
+    return False
+
+
+def acquire_lock_with_timeout(
+        db, lockname, acquire_timeout=10, lock_timeout=10):
+    """请求加锁, 并设置过期时间
+
+    Args:
+        - db: db 连接
+        - lockname: 需要加锁的键名
+        - acquire_timeout: 加锁动作超时时间(类似 requests 的 timeout)
+        - lock_timeout: 成功加锁后, 对锁键设置过期时间
+    Returns:
+        - identifier (str): 动作标识
+    """
+    identifier = str(uuid.uuid4())
+    lock_timeout = int(math.ceil(lock_timeout))
+    lockname = 'lock:' + lockname
+
+    end = time.time() + acquire_timeout
+    while time.time() < end:
+        if db.setnx(lockname, identifier):
+            db.expire(lockname, lock_timeout)
+            return identifier
+        elif db.ttl(lockname) <= 0:
+            db.expire(lockname, lock_timeout)
+
+        time.sleep(.001)
+    return False
+
+
+def release_lock(db, lockname, identifier):
+    """释放锁"""
+    pipe = db.pipeline()
+    lockname = 'lock:' + lockname
+
+    while True:
+        try:
+            pipe.watch(lockname)
+            if pipe.get(lockname) == identifier:
+                pipe.multi()
+                pipe.delete(lockname)
+                pipe.execute()
+                return True
+            pipe.unwatch()
+            break
+        except WatchError:
+            pass
+    return False
