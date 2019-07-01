@@ -151,13 +151,26 @@ class DbModel(metaclass=DbModelMeta):
 
     def save_new(self):
         data = self.to_dict()
-        self.__table__.insert_one(data)
+        self.insert_one(data)
 
         return True
 
+    def update(self):
+        query_dict = self._get_query_dict()
+        update_dict = self.to_dict()
+        self.update_one(query_dict, {'$set': update_dict})
+
+        return update_dict
+
+    def _get_query_dict(self):
+        query_dict = {}
+        for key in self.__index_keys__:
+            query_dict[key] = getattr(self, key)
+
+        return query_dict
+
     @classmethod
     def remove(cls, **kwargs):
-        query_dict = {}
         if cls.__index_keys__ & set(kwargs) != cls.__index_keys__:
             return False
 
@@ -171,19 +184,19 @@ class DbModel(metaclass=DbModelMeta):
 
     @classmethod
     def load(cls, **kwargs):
-        instance = cls()
 
-        if cls.__index_keys__ & set(kwargs) != cls.__index_keys__:
-            return instance
+        # if cls.__index_keys__ & set(kwargs) != cls.__index_keys__:
+        #     return instance
 
-        query_dict = {}
-        for key in cls.__index_keys__:
-            query_dict[key] = kwargs[key]
+        # query_dict = {}
+        # for key in cls.__index_keys__:
+        #     query_dict[key] = kwargs[key]
 
-        doc = cls.query_one(query_dict)
+        doc = cls.query_one(kwargs)
         if not doc:
-            return instance
+            return None
 
+        instance = cls()
         for field in cls.__fields__:
             instance.__dict__[field] = doc.get(field)
 
@@ -336,12 +349,13 @@ def acquire_lock_with_timeout(
     return False
 
 
-def release_lock(db, lockname, identifier):
+def release_lock(db, lockname, identifier, timeout=10):
     """释放锁"""
     pipe = db.pipeline()
     lockname = 'lock:' + lockname
 
-    while True:
+    end = time.time() + timeout
+    while time.time() < end:
         try:
             pipe.watch(lockname)
             if pipe.get(lockname) == identifier:

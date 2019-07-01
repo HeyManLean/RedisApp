@@ -5,21 +5,11 @@ import logging
 from flask import Flask
 from redis import Redis
 import pymongo
-# import pymysql
 
 from base import MyRequest
 from base.errors import ParamError
 from base.response import render_response
 
-
-# dirpath = os.path.abspath(os.path.dirname(__file__))
-# logging.basicConfig(
-#     level=logging.DEBUG,
-#     filename=os.path.join(dirpath, 'app.log'),
-#     filemode='a+',
-#     datefmt='%Y-%m-%d %H:%M:%S',
-#     format='[%(levelname)s][%(lineno)s] %(asctime)s - %(message)s'
-# )
 
 redis_host = 'localhost'  # 'redis'
 mongo_host = 'localhost'  # 'mongo
@@ -31,8 +21,8 @@ def create_app():
     app = Flask(__name__)
     app.request_class = MyRequest
 
-    from app.ad import ad_mod
-    app.register_blueprint(ad_mod, url_prefix='/ads')
+    from . import views
+    views.init_app(app)
 
     @app.route('/')
     def index():
@@ -47,9 +37,3 @@ def create_app():
         return render_response(error)
 
     return app
-# -*- coding: utf-8 -*-
-"""
-视图模块
-"""
-from app.views.ad import ad_mod
-from app.views.ad import views

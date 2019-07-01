@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
-from flask import request, jsonify
+"""
+广告定向模块
+"""
+from flask import Blueprint, request, jsonify
 
-from app.views.ad import ad_mod
 from app.services.ad import (
     add_ad, get_ad, remove_ad, record_click,
     target_ads, ip_to_location
 )
 from base import Param, parse_params
+
+
+# 模块
+ad_mod = Blueprint('ad', __name__)
 
 
 @ad_mod.route('/add', methods=['POST'])
