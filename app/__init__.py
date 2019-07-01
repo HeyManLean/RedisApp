@@ -47,3 +47,9 @@ def create_app():
         return render_response(error)
 
     return app
+# -*- coding: utf-8 -*-
+"""
+视图模块
+"""
+from app.views.ad import ad_mod
+from app.views.ad import views
