@@ -5,7 +5,7 @@ from utils.words import tokenize
 from utils.db import zunion, zintersect, union
 from utils.ip import ip_to_score
 from app import redis_db
-from ad.models import Ad
+from app.ad.models import Ad
 
 
 def gen_ad_id():

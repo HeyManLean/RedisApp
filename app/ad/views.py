@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from flask import request, jsonify
 
-from ad import ad_mod
-from ad.services import (
+from app.ad import ad_mod
+from app.ad.services import (
     add_ad, get_ad, remove_ad, record_click,
     target_ads, ip_to_location
 )
