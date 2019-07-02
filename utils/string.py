@@ -17,4 +17,5 @@ def get_random_str(length=12, chars=''):
 
 def get_hash_str(string, salt=''):
     """获取字符串 hash 值"""
-    return hashlib.sha256(string + salt).hexdigest()
+    string += salt
+    return hashlib.sha256(string.encode()).hexdigest()

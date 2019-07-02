@@ -6,10 +6,10 @@ from base.response import RetDef, RetCode
 
 
 class ParamError(Exception):
-    def __new__(cls, help=''):
-        return RetCode(10001, '参数不正确！', help=help)
+    def __init__(self, help=''):
+        self.retcode = RetCode(10001, '参数不正确！', help=help)
 
 
 class UnAuthError(Exception):
-    def __new__(cls, *args, **kwargs):
-        return RetDef.SIGNIN_REQUIRED
+    def __init__(self):
+        self.retcode = RetDef.SIGNIN_REQUIRED

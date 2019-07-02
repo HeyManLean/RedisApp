@@ -3,17 +3,33 @@
 自定义响应
 """
 # from collections import abc
-
 from flask import jsonify
 
+import config
 
-def render_response(obj, **kw):
+
+def render_response(obj, data=None, help=None, cookies=None):
     """渲染响应"""
-    if isinstance(obj, RetCode):
-        obj = obj.to_dict()
-        obj.update(kw)
+    if not isinstance(obj, RetCode):
+        assert 'render_response only accept `RetCode`.'
 
-    return jsonify(obj)
+    ret_data = obj.to_dict()
+
+    if data is not None:
+        ret_data['data'] = data
+
+    if help:
+        ret_data['help'] = help
+
+    response = jsonify(ret_data)
+    if cookies:
+        for key, value in cookies.items():
+            response.set_cookie(
+                key, value,
+                max_age=config.SESSION_EXPIRE_TIME
+            )
+
+    return response
 
 
 class RetCode(object):
@@ -38,6 +54,6 @@ class RetDef(object):
 
     PARAM_ERROR = RetCode(10001, '参数不正确！')
 
-    SIGNIN_REQUIRED = RetCode(10002, '用户未登录！')
-    SIGNIN_FAILED = RetCode(10003, '用户名不存在或密码错误！')
+    LOGIN_REQUIRED = RetCode(10002, '用户未登录！')
     USER_EXISTS = RetCode(10010, '用户名已存在，请直接登录！')
+    USER_NOT_FOUND = RetCode(10011, '用户名不存在或密码错误！')

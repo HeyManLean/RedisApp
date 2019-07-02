@@ -9,8 +9,7 @@ from app import redis_db
 from app.models.user import User
 from app.const import (
     SESSION_USER_KEY, SESSION_TOKEN_KEY,
-    SESSION_RECENT_ZKEY, USER_ID_COUNTER_KEY,
-    SESSION_KEY_EXPIRES
+    SESSION_RECENT_ZKEY, USER_ID_COUNTER_KEY
 )
 
 
@@ -63,12 +62,12 @@ def login_user(user: User):
     token = get_random_str()
     pipeline = redis_db.pipeline()
     user_key = SESSION_USER_KEY.format(token=token)
-    pipeline.set(user_key, user.user_id, ex=SESSION_KEY_EXPIRES)
+    pipeline.set(user_key, user.user_id, ex=config.SESSION_EXPIRE_TIME)
 
     token_key = SESSION_TOKEN_KEY.format(user_id=user.user_id)
-    pipeline.set(token_key, token, ex=SESSION_KEY_EXPIRES)
+    pipeline.set(token_key, token, ex=config.SESSION_EXPIRE_TIME)
 
-    pipeline.zadd(SESSION_RECENT_ZKEY, user.user_id, int(time.time()))
+    pipeline.zadd(SESSION_RECENT_ZKEY, {user.user_id: int(time.time())})
 
     # 清理登录状态，可以单独起一个程序清理，否则每秒执行次数太多
     pipeline.zremrangebyrank(SESSION_RECENT_ZKEY, 0, -1000)
@@ -92,7 +91,7 @@ def logout_user(token: str):
     token_key = SESSION_TOKEN_KEY.format(user_id=user_id)
 
     pipeline = redis_db.pipeline()
-    pipeline.delete(user_id)
+    pipeline.delete(user_key)
     pipeline.delete(token_key)
     pipeline.execute()
 

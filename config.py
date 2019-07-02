@@ -4,3 +4,4 @@
 """
 
 SECRET_KEY = 'heymanlean'
+SESSION_EXPIRE_TIME = 3600 * 24

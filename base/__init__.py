@@ -151,13 +151,8 @@ class MyRequest(Request):
         """获取参数"""
         return self._params
 
-    @property
-    def token(self):
+    def get_token(self):
         if self._token is None:
             self._token = self.cookies.get('token', '')
-        
-        return self._token
 
-    @token.setter
-    def token(self, value):
-        self._token = value
+        return self._token

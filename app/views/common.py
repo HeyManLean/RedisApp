@@ -6,8 +6,8 @@ from functools import wraps
 
 from flask import request
 
-from base.errors import UnAuthError
 from app.services.user import check_token
+from base.response import render_response, RetDef
 
 
 def logined(func):
@@ -16,7 +16,7 @@ def logined(func):
         """需要登录的视图函数装饰器"""
         user_id = check_token(request.token)
         if not user_id:
-            raise UnAuthError
+            return render_response(RetDef.LOGIN_REQUIRED)
 
         request.user_id = user_id
 

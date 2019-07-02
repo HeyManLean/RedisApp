@@ -4,8 +4,10 @@
 """
 
 from .ad import ad_mod
+from .user import user_mod
 
 
 def init_app(app):
     """初始化视图"""
+    app.register_blueprint(user_mod, url_prefix='/users')
     app.register_blueprint(ad_mod, url_prefix='/ads')

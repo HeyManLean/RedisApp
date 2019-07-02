@@ -4,7 +4,7 @@
 """
 from app import mongo_db
 from utils.db import (
-    DbModel, StringField, DatetimeField
+    DbModel, IntegerField, StringField, DatetimeField
 )
 
 
@@ -14,7 +14,7 @@ class User(DbModel):
     __db__ = mongo_db
     __tablename__ = 'user'
 
-    user_id = StringField(index=True)
+    user_id = IntegerField(index=True)
     username = StringField()
     password = StringField()
 

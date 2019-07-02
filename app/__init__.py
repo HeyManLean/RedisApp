@@ -33,7 +33,8 @@ def create_app():
 
     @app.errorhandler(ParamError)
     def handle_param_error(error):
-        logging.info(error.to_dict())
-        return render_response(error)
+        retcode = error.retcode
+        logging.info(retcode.to_dict())
+        return render_response(retcode)
 
     return app

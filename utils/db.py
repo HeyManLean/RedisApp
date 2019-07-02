@@ -45,32 +45,32 @@ class StringField(ValidatedField):
             raise ValueError('<%s: %s> can not be empty!' % (
                 StringField.__name__, self._name))
         if value and not isinstance(value, str):
-            raise ValueError('<%s: %s> must be a string!' % (
-                StringField.__name__, self._name))
+            raise ValueError('<%s: %s> must be a string! Not %s(%s)!' % (
+                StringField.__name__, self._name, type(value), value))
         return value
 
 
 class IntegerField(ValidatedField):
     def validate(self, instance, value):
         if not isinstance(value, int):
-            raise ValueError('<%s: %s> must be a integer!' % (
-                StringField.__name__, self._name))
+            raise ValueError('<%s: %s> must be a integer! Not %s(%s)!' % (
+                StringField.__name__, self._name, type(value), value))
         return value
 
 
 class FloatField(ValidatedField):
     def validate(self, instance, value):
         if not isinstance(value, float):
-            raise ValueError('<%s: %s> must be a float!' % (
-                StringField.__name__, self._name))
+            raise ValueError('<%s: %s> must be a float! Not %s(%s)!' % (
+                StringField.__name__, self._name, type(value), value))
         return value
 
 
 class DatetimeField(ValidatedField):
     def validate(self, instance, value):
         if not isinstance(value, datetime):
-            raise ValueError('<%s: %s> must be a datetime object!' % (
-                StringField.__name__, self._name))
+            raise ValueError('<%s: %s> must be a datetime object! Not %s(%s)!' % (
+                StringField.__name__, self._name, type(value), value))
         return value
 
     def __get__(self, instance, ownner):
@@ -100,6 +100,8 @@ class DbModelMeta(type):
                 method = getattr(cls.__table__, method_name)
                 setattr(cls, method_name, method)
 
+        cls.__index_keys__ = set()
+        cls.__fields__ = set()
         for key, attr in attr_dict.items():
             if not isinstance(attr, BaseField):
                 continue
@@ -112,7 +114,7 @@ class DbModelMeta(type):
 
 
 MONGO_METHODS = [
-    'update_one', 'update_many', 'delete_one',
+    'insert_one', 'update_one', 'update_many', 'delete_one',
     'delete_many', 'distinct', 'aggregate'
 ]
 
@@ -121,8 +123,9 @@ class DbModel(metaclass=DbModelMeta):
     __db__ = None
     __tablename__ = None
 
-    __fields__ = set()
-    __index_keys__ = set()
+    # 不需要处理
+    __fields__ = None
+    __index_keys__ = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -163,6 +166,7 @@ class DbModel(metaclass=DbModelMeta):
         return update_dict
 
     def _get_query_dict(self):
+        print(self.__class__.__name__, self.__index_keys__, self.__fields__)
         query_dict = {}
         for key in self.__index_keys__:
             query_dict[key] = getattr(self, key)
