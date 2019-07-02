@@ -124,6 +124,7 @@ def parse_params(*params):
 class MyRequest(Request):
     def __init__(self, *args, **kwargs):
         self._params = {}
+        self._token = None
 
         super().__init__(*args, **kwargs)
 
@@ -149,3 +150,14 @@ class MyRequest(Request):
     def params(self):
         """获取参数"""
         return self._params
+
+    @property
+    def token(self):
+        if self._token is None:
+            self._token = self.cookies.get('token', '')
+        
+        return self._token
+
+    @token.setter
+    def token(self, value):
+        self._token = value

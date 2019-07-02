@@ -22,4 +22,3 @@ def logined(func):
 
         return func(*args, **kwargs)
     return decorator
-

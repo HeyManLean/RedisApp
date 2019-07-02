@@ -2,33 +2,14 @@
 """
 自定义错误
 """
+from base.response import RetDef, RetCode
 
 
 class ParamError(Exception):
-    def __init__(self, help=''):
-        self.help = help or ''
-
-        self.code = 10001
-        self.errmsg = '参数检验失败!'
-
-    def to_dict(self):
-        res = {
-            'code': self.code,
-            'errmsg': self.errmsg,
-        }
-        if self.help:
-            res['help'] = self.help
-        return res
+    def __new__(cls, help=''):
+        return RetCode(10001, '参数不正确！', help=help)
 
 
 class UnAuthError(Exception):
-    def __init__(self):
-        self.code = 10002
-        self.errmsg = '用户未登录！'
-
-    def to_dict(self):
-        res = {
-            'code': self.code,
-            'errmsg': self.errmsg,
-        }
-        return res
+    def __new__(cls, *args, **kwargs):
+        return RetDef.SIGNIN_REQUIRED

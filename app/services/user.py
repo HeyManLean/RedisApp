@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import time
 from datetime import datetime
-from functools import wraps
 
+import config
 from utils.string import get_random_str, get_hash_str
 from utils.db import acquire_lock_with_timeout, release_lock
 from app import redis_db
@@ -22,12 +22,16 @@ def get_user(user_id: str):
 
 def create_user(username, pwd_md5):
     """创建新用户"""
+    user = User.load(username=username)
+    if user:
+        return None
+
     now = datetime.now()
 
     user = User()
     user.user_id = gen_user_id()
     user.username = username
-    user.password = get_hash_str(pwd_md5)
+    user.password = get_hash_str(pwd_md5, config.SECRET_KEY)
     user.login_time = user.create_time = user.update_time = now
 
     user.save_new()
@@ -39,17 +43,25 @@ def gen_user_id():
     return int(redis_db.incr(USER_ID_COUNTER_KEY))
 
 
-def login_user(username: str, pwd_md5: str):
-    """用户登录"""
+def validate_user(username: str, pwd_md5: str):
+    """验证用户名和密码"""
     user = User.load(username=username)
     if not user:
-        user = create_user(username, pwd_md5)
-    else:
-        user.login_time = datetime.now()
-        user.update()
+        return None
 
-    pipeline = redis_db.pipeline()
+    if not user.password == get_hash_str(pwd_md5, config.SECRET_KEY):
+        return None
+
+    return user
+
+
+def login_user(user: User):
+    """用户登录"""
+    user.login_time = datetime.now()
+    user.update()
+
     token = get_random_str()
+    pipeline = redis_db.pipeline()
     user_key = SESSION_USER_KEY.format(token=token)
     pipeline.set(user_key, user.user_id, ex=SESSION_KEY_EXPIRES)
 
@@ -57,10 +69,12 @@ def login_user(username: str, pwd_md5: str):
     pipeline.set(token_key, token, ex=SESSION_KEY_EXPIRES)
 
     pipeline.zadd(SESSION_RECENT_ZKEY, user.user_id, int(time.time()))
+
+    # 清理登录状态，可以单独起一个程序清理，否则每秒执行次数太多
     pipeline.zremrangebyrank(SESSION_RECENT_ZKEY, 0, -1000)
 
     pipeline.execute()
-    return user
+    return token
 
 
 def logout_user(token: str):
