@@ -16,6 +16,7 @@ from app.const import (
 def get_user(user_id: str):
     """获取用户"""
     user = User.load(user_id=user_id)
+    print(user_id, user)
     return user
 
 
@@ -83,7 +84,7 @@ def logout_user(token: str):
     if not lock:
         return False
 
-    user_key = SESSION_TOKEN_KEY.format(token=token)
+    user_key = SESSION_USER_KEY.format(token=token)
     user_id = redis_db.get(user_key)
     if not user_id:
         return False
@@ -102,5 +103,5 @@ def logout_user(token: str):
 
 def check_token(token: str):
     """检查登录状态"""
-    user_key = SESSION_TOKEN_KEY.format(token=token)
-    return redis_db.get(user_key)
+    user_key = SESSION_USER_KEY.format(token=token)
+    return int(redis_db.get(user_key) or 0)

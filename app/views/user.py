@@ -9,7 +9,7 @@ from base import Param, parse_params
 from base.response import RetDef, render_response
 from app.services.user import (
     login_user, create_user, validate_user,
-    logout_user
+    logout_user, get_user
 )
 from app.views.common import logined
 
@@ -72,8 +72,12 @@ def _signout_user():
     return render_response(RetDef.SUCCESS)
 
 
-@user_mod.route('/check_session', methods=['POST'])
+@user_mod.route('/session')
 @logined
 def _check_session():
     """检验登录态"""
-    return render_response(RetDef.SUCCESS)
+    user = get_user(request.user_id)
+    return render_response(
+        RetDef.SUCCESS,
+        data=user.to_json()
+    )

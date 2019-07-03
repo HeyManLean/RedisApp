@@ -125,6 +125,7 @@ class MyRequest(Request):
     def __init__(self, *args, **kwargs):
         self._params = {}
         self._token = None
+        self._user_id = None
 
         super().__init__(*args, **kwargs)
 
@@ -156,3 +157,11 @@ class MyRequest(Request):
             self._token = self.cookies.get('token', '')
 
         return self._token
+
+    @property
+    def user_id(self):
+        return self._user_id
+
+    @user_id.setter
+    def user_id(self, value):
+        self._user_id = value

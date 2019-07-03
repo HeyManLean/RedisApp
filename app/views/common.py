@@ -14,7 +14,8 @@ def logined(func):
     @wraps(func)
     def decorator(*args, **kwargs):
         """需要登录的视图函数装饰器"""
-        user_id = check_token(request.token)
+        token = request.get_token()
+        user_id = check_token(token)
         if not user_id:
             return render_response(RetDef.LOGIN_REQUIRED)
 
