@@ -69,13 +69,3 @@ def _get_ad(ad_id):
 def _remove_ad(ad_id):
     remove_ad(ad_id)
     return jsonify({})
-
-
-@ad_mod.route('/test')
-@parse_params(
-    Param('name', default='ABC', choices=('ABC', 'abc'), required=True),
-    Param('age', type=int, help='age: (1, 100)', required=True)
-)
-def test():
-    params = request.params
-    return jsonify(params)

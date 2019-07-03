@@ -9,7 +9,13 @@ import config
 
 
 def render_response(obj, data=None, help=None, cookies=None):
-    """渲染响应"""
+    """渲染响应
+
+    Args:
+        data (any): 返回数据
+        help (str): 错误帮助提示
+        cookies (dict): 要设置的 cookie 键值对
+    """
     if not isinstance(obj, RetCode):
         assert 'render_response only accept `RetCode`.'
 

@@ -22,7 +22,7 @@ user_mod = Blueprint('user', __name__)
     Param('username', required=True),
     Param('pwd', required=True),
 )
-def _signup_user():
+def signup():
     user = create_user(
         username=request.params['username'],
         pwd_md5=request.params['pwd']
@@ -44,7 +44,7 @@ def _signup_user():
     Param('username', required=True),
     Param('pwd', required=True)
 )
-def _signin_user():
+def signin():
     """用户登录"""
     user = validate_user(
         username=request.params['username'],
@@ -64,7 +64,7 @@ def _signin_user():
 
 @user_mod.route('/signout', methods=['POST'])
 @logined
-def _signout_user():
+def signout():
     """用户注销"""
     token = request.get_token()
     logout_user(token)
@@ -74,7 +74,7 @@ def _signout_user():
 
 @user_mod.route('/session')
 @logined
-def _check_session():
+def check_session():
     """检验登录态"""
     user = get_user(request.user_id)
     return render_response(
