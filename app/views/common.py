@@ -7,7 +7,7 @@ from functools import wraps
 from flask import request
 
 from app.services.user import check_token
-from base.response import render_response, RetDef
+from base.errors import UnAuthError
 
 
 def logined(func):
@@ -17,7 +17,7 @@ def logined(func):
         token = request.get_token()
         user_id = check_token(token)
         if not user_id:
-            return render_response(RetDef.LOGIN_REQUIRED)
+            raise UnAuthError
 
         request.user_id = user_id
 

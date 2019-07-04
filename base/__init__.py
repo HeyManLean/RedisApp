@@ -121,7 +121,7 @@ def parse_params(*params):
     return middle
 
 
-class MyRequest(Request):
+class RequestClass(Request):
     def __init__(self, *args, **kwargs):
         self._params = {}
         self._token = None
@@ -165,3 +165,12 @@ class MyRequest(Request):
     @user_id.setter
     def user_id(self, value):
         self._user_id = value
+
+
+class MyRequest(object):
+    def __init__(self, app=None):
+        if app is not None:
+            self.init_app(app)
+
+    def init_app(self, app):
+        app.request_class = RequestClass

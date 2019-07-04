@@ -7,8 +7,9 @@ from redis import Redis
 import pymongo
 
 from base import MyRequest
-from base.errors import ParamError
-from base.response import render_response
+from base.errors import ErrorHandler
+from config import Config
+from .views import Views
 
 
 redis_host = 'localhost'  # 'redis'
@@ -21,8 +22,14 @@ def create_app():
     app = Flask(__name__)
     app.request_class = MyRequest
 
-    from . import views
-    views.init_app(app)
+    # 激活视图模块
+    Views(app)
+
+    # 加载配置
+    Config(app)
+
+    # 自定义错误响应处理
+    ErrorHandler(app)
 
     @app.route('/')
     def index():
@@ -30,11 +37,5 @@ def create_app():
         redis_db.incr(key)
         value = redis_db.get(key)
         return 'I have been show for %s times!' % int(value)
-
-    @app.errorhandler(ParamError)
-    def handle_param_error(error):
-        retcode = error.retcode
-        logging.info(retcode.to_dict())
-        return render_response(retcode)
 
     return app
