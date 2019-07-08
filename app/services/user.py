@@ -5,7 +5,7 @@ from datetime import datetime
 import config
 from utils.string import get_random_str, get_hash_str
 from utils.db import acquire_lock_with_timeout, release_lock
-from app import redis_db
+from app import redis_mapping
 from app.models.user import User
 from app.const import (
     SESSION_USER_KEY, SESSION_TOKEN_KEY,
@@ -13,10 +13,12 @@ from app.const import (
 )
 
 
+redis_db = redis_mapping.get_db('session')
+
+
 def get_user(user_id: str):
     """获取用户"""
     user = User.load(user_id=user_id)
-    print(user_id, user)
     return user
 
 

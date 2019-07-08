@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-from app import mongo_db
+from app import mongo_mapping
 from utils.db import (
     DbModel, StringField, DatetimeField,
     BaseField, FloatField
 )
+
+mongo_db = mongo_mapping.get_db('myapp')
 
 
 class Ad(DbModel):

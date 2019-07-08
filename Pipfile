@@ -12,6 +12,7 @@ pymongo = "*"
 pymysql = "*"
 pytz = "*"
 redis = "*"
+flask-sqlalchemy = "*"
 
 [requires]
 python_version = "3.7"

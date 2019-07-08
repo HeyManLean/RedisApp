@@ -17,40 +17,38 @@ TESTING = True
 SESSION_EXPIRE_TIME = 3600 * 24
 
 
+# ----------------- 辅助工具 -----------------
+# 1. 日志
+LOGGING_CONF = {
+}
+
+
 # ------------------ 数据库相关 -----------------
 # 1. MongoDB
-DEV_MONGO_URI = 'mongo://localhost:27017'
 MONGO_DBS = {
-    '1000': DEV_MONGO_URI,
+    '1000': 'mongodb://localhost:27017',
 }
 
 
 # 2. Redis
-DEV_REDIS_URI = 'redis://localhost:6379'
 REDIS_DBS = {
-    'ad': '%s/1' % DEV_REDIS_URI,
-    'session': '%s/2' % DEV_REDIS_URI,
-    'post': '%s/3' % DEV_REDIS_URI,
-    'cache': '%s/4' % DEV_REDIS_URI,
-    'conf': '%s/5' % DEV_REDIS_URI,
-    'ip': '%s/6' % DEV_REDIS_URI,
-    'counter': '%s/7' % DEV_REDIS_URI,
+    'ad': 'redis://localhost:6379/1',
+    'session': 'redis://localhost:6379/2',
+    'post': 'redis://localhost:6379/3',
+    'cache': 'redis://localhost:6379/4',
+    'conf': 'redis://localhost:6379/5',
+    'ip': 'redis://localhost:6379/6',
+    'counter': 'redis://localhost:6379/7',
+    'test': 'redis://localhost:6379/10',
 }
 
 # 3. Mysql
 MYSQL_DBS = {
-    'default': {  # 默认 db
-        'drivername': 'mysql+pymysql',
-        'host': 'localhost',
-        'port': '3306',
-        'username': 'root',
-        'password': '123456',
-        'database': 'myapp',
-        'query': {'charset': 'utf8mb4'}
-    },
+    'default': 'mysql+pymsql://root:123456@127.0.0.1:3306/myapp',
 }
 
 
+# --------------- Flask 相关配置 --------------
 class Config(object):
     """供 flask 使用的配置"""
     SECRET_KEY = SECRET_KEY

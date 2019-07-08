@@ -1,38 +1,44 @@
 # -*- coding: utf-8 -*-
-import logging
-# import os
-
 from flask import Flask
-from redis import Redis
-import pymongo
 
 from base import MyRequest
 from base.errors import ErrorHandler
 from config import Config
-from .views import Views
+from app.views import Views
+from app.extensions import (
+    MongoMapping,
+    RedisMapping,
+    MySQLAlchemy,
+    Logger
+)
 
-
-redis_host = 'localhost'  # 'redis'
-mongo_host = 'localhost'  # 'mongo
-redis_db = Redis(host=redis_host, port=6379, decode_responses=True)
-mongo_db = pymongo.MongoClient(host=mongo_host, port=27017)['my_app']
+# 供其他模块调用的工具
+mongo_mapping = MongoMapping()
+redis_mapping = RedisMapping()
+db = MySQLAlchemy()
+logger = Logger()
 
 
 def create_app():
     app = Flask(__name__)
-    app.request_class = MyRequest
 
+    mongo_mapping.init_app(app)
+    redis_mapping.init_app(app)
+    db.init_app(app)
+    logger.init_app(app)
+
+    # 请求模块
+    MyRequest(app)
     # 激活视图模块
     Views(app)
-
     # 加载配置
     Config(app)
-
     # 自定义错误响应处理
     ErrorHandler(app)
 
     @app.route('/')
     def index():
+        redis_db = redis_mapping.get_db('test')
         key = 'show_me'
         redis_db.incr(key)
         value = redis_db.get(key)

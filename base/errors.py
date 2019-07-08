@@ -12,7 +12,7 @@ class ParamError(Exception):
 
 class UnAuthError(Exception):
     def __init__(self):
-        self.retcode = RetDef.SIGNIN_REQUIRED
+        self.retcode = RetDef.LOGIN_REQUIRED
 
 
 class ErrorHandler(object):
@@ -24,10 +24,12 @@ class ErrorHandler(object):
         app.register_error_handler(ParamError, self.handle_error)
         app.register_error_handler(UnAuthError, self.handle_error)
 
+    @staticmethod
     def handle_error(error):
         """统一处理自定义错误响应码"""
         retcode = error.retcode
         return render_response(retcode)
 
+    @staticmethod
     def handle_error500(error):
         """处理500错误"""

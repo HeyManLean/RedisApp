@@ -4,8 +4,11 @@ from datetime import datetime
 from utils.words import tokenize
 from utils.db import zunion, zintersect, union
 from utils.ip import ip_to_score
-from app import redis_db
+from app import redis_mapping
 from app.models.ad import Ad
+
+
+redis_db = redis_mapping.get_db('ad')
 
 
 def gen_ad_id():

@@ -2,10 +2,13 @@
 """
 用户数据模型
 """
-from app import mongo_db
+from app import mongo_mapping
 from utils.db import (
     DbModel, IntegerField, StringField, DatetimeField
 )
+
+
+mongo_db = mongo_mapping.get_db('myapp')
 
 
 class User(DbModel):
