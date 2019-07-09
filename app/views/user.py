@@ -5,7 +5,7 @@
 
 from flask import Blueprint, request
 
-from base import Param, parse_params
+from base.params import Param, parse_params
 from base.response import RetDef, render_response
 from app.services.user import (
     login_user, create_user, validate_user,

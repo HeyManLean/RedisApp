@@ -2,6 +2,7 @@
 """
 配置相关
 """
+import os
 
 # ----------------- 系统配置 -----------------
 # 1. 加密密钥
@@ -10,6 +11,11 @@ SECRET_KEY = 'heymanlean'
 DEBUG = True
 ENV = 'development'  # production, testing, development
 TESTING = True
+
+# 3. 项目路径
+PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
+# 4. 日志路径（默认项目路径下 log 文件夹)
+LOG_PATH = os.path.join(PROJECT_PATH, 'log')
 
 
 # ----------------- 用户相关 -----------------
@@ -20,6 +26,46 @@ SESSION_EXPIRE_TIME = 3600 * 24
 # ----------------- 辅助工具 -----------------
 # 1. 日志
 LOGGING_CONF = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'default': {
+            'format': '[%(levelname)s] %(asctime)s - %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        }
+    },
+    'handlers': {
+        'stdout': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'default',
+        },
+        'default_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'default',
+            'filename': os.path.join(LOG_PATH, 'default.log')
+        },
+        'error_file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'formatter': 'default',
+            'filename': os.path.join(LOG_PATH, 'error.log')
+        }
+    },
+    'loggers': {
+        # 按需求添加 warning 相关
+        'default': {
+            'level': 'DEBUG',
+            'handlers': ['stdout', 'default_file'],
+            'propagate': False
+        },
+        'error': {
+            'level': 'ERROR',
+            'handlers': ['stdout', 'error_file'],
+            'propagate': False
+        }
+    }
 }
 
 

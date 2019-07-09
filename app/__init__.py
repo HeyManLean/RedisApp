@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask
 
-from base import MyRequest
+from base import MyRequest, HandlerMiddler
 from base.errors import ErrorHandler
 from config import Config
 from app.views import Views
@@ -35,6 +35,8 @@ def create_app():
     Config(app)
     # 自定义错误响应处理
     ErrorHandler(app)
+    # 请求前后处理中间件
+    HandlerMiddler(app)
 
     @app.route('/')
     def index():

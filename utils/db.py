@@ -166,7 +166,6 @@ class DbModel(metaclass=DbModelMeta):
         return update_dict
 
     def _get_query_dict(self):
-        print(self.__class__.__name__, self.__index_keys__, self.__fields__)
         query_dict = {}
         for key in self.__index_keys__:
             query_dict[key] = getattr(self, key)
