@@ -14,7 +14,7 @@ from .errors import ParamError
 class Param(object):
     __slots__ = [
         'name', 'type', 'required', 'default', 'discard',
-        'ignore', 'choices', 'by', 'help', 'nullable'
+        'ignore', 'choices', 'location', 'help', 'nullable'
     ]
 
     def __init__(
@@ -26,7 +26,7 @@ class Param(object):
         nullable=True,
         ignore=False,
         choices=None,
-        by=None,
+        location=None,
         discard=False,
         help=''
     ):
@@ -40,7 +40,7 @@ class Param(object):
             nullable (bool): 是否非空
             ignore (bool): 是否忽略类型
             choices (tuple): 可选值
-            by (str): 访问数据源 args, json, form
+            location (str): 访问数据源 args, json, form
                       默认 GET: args, POST: json
             discard (bool): 不存在 key, 是否不解析参数
             help (str): 参数不匹配时, 返回提示
@@ -52,7 +52,7 @@ class Param(object):
         self.ignore = ignore
         self.choices = choices
         self.nullable = nullable
-        self.by = by
+        self.location = location
         self.discard = discard
         self.help = help
 
@@ -61,8 +61,8 @@ class Param(object):
         Returns:
             value(值), valid(是否有效)
         """
-        if self.by and hasattr(request, self.by):
-            req_data = getattr(request, self.by)
+        if self.location and hasattr(request, self.location):
+            req_data = getattr(request, self.location)
         elif request.method == 'GET':
             req_data = request.args
         else:

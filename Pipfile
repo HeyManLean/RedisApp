@@ -13,6 +13,7 @@ pymysql = "*"
 pytz = "*"
 redis = "*"
 flask-sqlalchemy = "*"
+flask-restful = "*"
 
 [requires]
 python_version = "3.7"

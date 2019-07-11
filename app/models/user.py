@@ -25,5 +25,7 @@ class User(DbModel):
     create_time = DatetimeField()
     update_time = DatetimeField()
 
+    
+
     def __repr__(self):
         return '<%s: %s>' % (self.__class__.__name__, self.user_id)

@@ -65,7 +65,7 @@ class MyRequest(object):
         app.request_class = RequestClass
 
 
-class HandlerMiddler(object):
+class HttpLog(object):
     def __init__(self, app=None):
         self.logger = None
         if app:
@@ -99,7 +99,7 @@ class HandlerMiddler(object):
 
         msg = '%s "%s %s %s %s %sms" - Req: %s, Resp: %s' % (
             request.ip, request.method, request.environ['SERVER_PROTOCOL'],
-            request.full_path, response.status_code, waste_time,
+            request.full_path.strip('?'), response.status_code, waste_time,
             req_data, resp_data
         )
 

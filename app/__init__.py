@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from flask import Flask
 
-from base import MyRequest, HandlerMiddler
+from base import MyRequest, HttpLog
 from base.errors import ErrorHandler
 from config import Config
-from app.views import Views
+from app.views import MyApi
 from app.extensions import (
     MongoMapping,
     RedisMapping,
@@ -27,16 +27,17 @@ def create_app():
     db.init_app(app)
     logger.init_app(app)
 
+    # 加载配置
+    Config(app)
+
     # 请求模块
     MyRequest(app)
     # 激活视图模块
-    Views(app)
-    # 加载配置
-    Config(app)
+    MyApi(app)
     # 自定义错误响应处理
     ErrorHandler(app)
-    # 请求前后处理中间件
-    HandlerMiddler(app)
+    # 请求处理日志
+    HttpLog(app)
 
     @app.route('/')
     def index():
