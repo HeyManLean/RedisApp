@@ -17,9 +17,9 @@ def render_response(obj=None, data=None, help=None, cookies=None):
         cookies (dict): 要设置的 cookie 键值对
     """
     if not obj:
-        obj = RetDef.SUCCESS
+        obj = StatusDef.SUCCESS
     elif not isinstance(obj, RetCode):
-        assert 'render_response only accept `RetCode`.'
+        obj = StatusDef.UNKNOWN
 
     ret_data = obj.to_dict()
 
@@ -42,7 +42,7 @@ def render_response(obj=None, data=None, help=None, cookies=None):
 
 class RetCode(object):
     """响应码对象"""
-    def __init__(self, code=0, msg='success', **extra):
+    def __init__(self, code, msg, **extra):
         self.code = code
         self.msg = msg
         self.extra = extra
@@ -57,8 +57,10 @@ class RetCode(object):
         return res
 
 
-class RetDef(object):
-    SUCCESS = RetCode()
+class StatusDef(object):
+    UNKNOWN = RetCode(-1, '未知错误码！')
+    SUCCESS = RetCode(0, 'success')
+    SERVER_ERROR = RetCode(500, '服务器错误！')
 
     PARAM_ERROR = RetCode(10001, '参数不正确！')
 

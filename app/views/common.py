@@ -7,7 +7,8 @@ from functools import wraps
 from flask import request
 
 from app.services.user import check_token
-from base.errors import UnAuthError
+from base.errors import ApiError
+from base.response import StatusDef
 
 
 def logined(func):
@@ -17,7 +18,7 @@ def logined(func):
         token = request.get_token()
         user_id = check_token(token)
         if not user_id:
-            raise UnAuthError
+            raise ApiError(StatusDef.LOGIN_REQUIRED)
 
         request.user_id = user_id
 

@@ -7,7 +7,7 @@ from flask import request
 from flask_restful import Resource
 
 from base.params import Param, parse_params
-from base.response import RetDef, render_response
+from base.response import StatusDef, render_response
 from app.services.user import (
     login_user, create_user, validate_user,
     logout_user, get_user
@@ -18,15 +18,17 @@ from app.views.common import logined
 class UserResource(Resource):
     @parse_params(
         Param('username', required=True),
-        Param('pwd', required=True)
+        Param('pwd', required=True),
+        Param('nickname', required=True),
     )
     def post(self):
         user = create_user(
             username=request.params['username'],
-            pwd_md5=request.params['pwd']
+            pwd_md5=request.params['pwd'],
+            nickname=request.params['nickname']
         )
         if not user:
-            return render_response(RetDef.USER_EXISTS)
+            return render_response(StatusDef.USER_EXISTS)
 
         token = login_user(user)
 
@@ -52,7 +54,7 @@ class SessionResource(Resource):
             pwd_md5=request.params['pwd']
         )
         if not user:
-            return render_response(RetDef.USER_NOT_FOUND)
+            return render_response(StatusDef.USER_NOT_FOUND)
 
         token = login_user(user)
 

@@ -8,7 +8,8 @@ from collections import abc
 
 from flask import request
 
-from .errors import ParamError
+from .errors import ApiError
+from .response import StatusDef
 
 
 class Param(object):
@@ -74,7 +75,8 @@ class Param(object):
         if req_data and self.name in req_data:
             value = req_data[self.name]
         elif self.required:
-            raise ParamError(
+            raise ApiError(
+                StatusDef.PARAM_ERROR,
                 '`%s` is required! %s' % (self.name, self.help)
             )
         elif self.discard:
@@ -83,20 +85,23 @@ class Param(object):
         # 检查是否非空
         if value is None:
             if not self.nullable:
-                raise ParamError(
+                raise ApiError(
+                    StatusDef.PARAM_ERROR,
                     '`%s` is not nullable! %s' % (self.name, self.help)
                 )
 
         # 检查参数类型
         elif not self.ignore and not isinstance(value, self.type):
-            raise ParamError(
+            raise ApiError(
+                StatusDef.PARAM_ERROR,
                 'TypeError: `%s` is %s! %s' % (self.name, self.type, self.help)
             )
 
         # 检查取值
         if isinstance(self.choices, abc.Iterable) and\
                 value not in self.choices:
-            raise ParamError(
+            raise ApiError(
+                StatusDef.PARAM_ERROR,
                 'ValueError: `%s` must in %s!%s' % (
                     self.name, self.choices, self.help)
             )

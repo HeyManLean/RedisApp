@@ -8,6 +8,7 @@ import logging.config
 import pymongo
 import redis
 from flask_sqlalchemy import SQLAlchemy
+from utils.db import DbModel
 
 from config import (
     MONGO_DBS,
@@ -33,6 +34,8 @@ class MongoMapping(object):
     def init_app(self, app):
         for conn_name, db_uri in MONGO_DBS.items():
             self._conn_mapping[conn_name] = pymongo.MongoClient(db_uri)
+
+        DbModel.get_db = self.get_db
         app.extensions['mongo_mapping'] = self
 
     def get_db(self, db_name):

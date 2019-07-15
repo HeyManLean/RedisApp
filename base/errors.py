@@ -2,17 +2,13 @@
 """
 自定义错误
 """
-from base.response import RetDef, RetCode, render_response
+from base.response import render_response
 
 
-class ParamError(Exception):
-    def __init__(self, help=''):
-        self.retcode = RetCode(10001, '参数不正确！', help=help)
-
-
-class UnAuthError(Exception):
-    def __init__(self):
-        self.retcode = RetDef.LOGIN_REQUIRED
+class ApiError(Exception):
+    def __init__(self, code, help=None):
+        self.code = code
+        self.help = help
 
 
 class ErrorHandler(object):
@@ -21,15 +17,18 @@ class ErrorHandler(object):
             self.init_app(app)
 
     def init_app(self, app):
-        app.register_error_handler(ParamError, self.handle_error)
-        app.register_error_handler(UnAuthError, self.handle_error)
+        app.register_error_handler(ApiError, self.handle_error)
+        app.register_error_handler(500, self.handle_error500)
 
     @staticmethod
     def handle_error(error):
         """统一处理自定义错误响应码"""
-        retcode = error.retcode
-        return render_response(retcode)
+        return render_response(
+            error.code,
+            help=error.help
+        )
 
     @staticmethod
     def handle_error500(error):
         """处理500错误"""
+        return error

@@ -13,35 +13,53 @@ from app.const import (
 )
 
 
-redis_db = redis_mapping.get_db('session')
-
-
 def get_user(user_id: str):
     """获取用户"""
     user = User.load(user_id=user_id)
     return user
 
 
-def create_user(username, pwd_md5):
+def create_user(username, pwd_md5, nickname):
     """创建新用户"""
-    user = User.load(username=username)
-    if user:
+    lock_db = redis_mapping.get_db('lock')
+    lock = acquire_lock_with_timeout(lock_db, 'user:' + username, 1)
+    if not lock:
         return None
 
+    user = User.load(username=username)
+    if user:
+        release_lock(lock_db, 'user:' + username, lock)
+        return None
+
+    user_id = gen_user_id()
     now = datetime.now()
 
     user = User()
-    user.user_id = gen_user_id()
+    user.user_id = user_id
     user.username = username
+    user.nickname = nickname
     user.password = get_hash_str(pwd_md5, config.SECRET_KEY)
     user.login_time = user.create_time = user.update_time = now
-
     user.save_new()
+
+    user_db = redis_mapping.get_db('user')
+    user_db.hmset('user:' + user_id, {
+        'user_id': user_id,
+        'nickname': nickname,
+        'followers': 0,
+        'followings': 0,
+        'posts': 0,
+        'login': datetime.timestamp(now)
+    })
+
+    release_lock(lock_db, 'user:' + username, lock)
+
     return user
 
 
 def gen_user_id():
     """自增生成新的用户id"""
+    redis_db = redis_mapping.get_db('counter')
     return int(redis_db.incr(USER_ID_COUNTER_KEY))
 
 
@@ -59,6 +77,7 @@ def validate_user(username: str, pwd_md5: str):
 
 def login_user(user: User):
     """用户登录"""
+    redis_db = redis_mapping.get_db('session')
     user.login_time = datetime.now()
     user.update()
 
@@ -81,6 +100,7 @@ def login_user(user: User):
 
 def logout_user(token: str):
     """用户注销"""
+    redis_db = redis_mapping.get_db('session')
     lockname = 'user:logout:' + token
     lock = acquire_lock_with_timeout(redis_db, lockname, 1)
     if not lock:
@@ -105,5 +125,6 @@ def logout_user(token: str):
 
 def check_token(token: str):
     """检查登录状态"""
+    redis_db = redis_mapping.get_db('session')
     user_key = SESSION_USER_KEY.format(token=token)
     return int(redis_db.get(user_key) or 0)

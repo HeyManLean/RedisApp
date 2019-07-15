@@ -80,7 +80,7 @@ MONGO_DBS = {
 REDIS_DBS = {
     'ad': 'redis://localhost:6379/1',
     'session': 'redis://localhost:6379/2',
-    'post': 'redis://localhost:6379/3',
+    'status': 'redis://localhost:6379/3',
     'cache': 'redis://localhost:6379/4',
     'conf': 'redis://localhost:6379/5',
     'ip': 'redis://localhost:6379/6',

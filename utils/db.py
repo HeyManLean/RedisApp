@@ -68,7 +68,7 @@ class FloatField(ValidatedField):
 
 class DatetimeField(ValidatedField):
     def validate(self, instance, value):
-        if not isinstance(value, datetime):
+        if value and not isinstance(value, datetime):
             raise ValueError('<%s: %s> must be a datetime object! Not %s(%s)!' % (
                 StringField.__name__, self._name, type(value), value))
         return value
@@ -84,15 +84,20 @@ class DatetimeField(ValidatedField):
 
     def __set__(self, instance, value):
         value = self.validate(instance, value)
-        instance.__dict__[self._name] = local_time_to_utc(value)
+        if value:
+            instance.__dict__[self._name] = local_time_to_utc(value)
+        else:
+            instance.__dict__[self._name] = value
 
 
 class DbModelMeta(type):
 
     def __init__(cls, name, bases, attr_dict):
         super().__init__(name, bases, attr_dict)
-        if not all([cls.__db__, cls.__tablename__]):
+        if not all([cls.__dbname__, cls.__tablename__]):
             return
+
+        cls.__db__ = cls.get_db(cls.__dbname__)
 
         cls.__table__ = cls.__db__[cls.__tablename__]
         for method_name in MONGO_METHODS:
@@ -120,12 +125,13 @@ MONGO_METHODS = [
 
 
 class DbModel(metaclass=DbModelMeta):
-    __db__ = None
+    __dbname__ = None
     __tablename__ = None
 
     # 不需要处理
     __fields__ = None
     __index_keys__ = None
+    __db__ = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -140,13 +146,13 @@ class DbModel(metaclass=DbModelMeta):
     def to_dict(self):
         data = {}
         for key in self.__fields__:
-            data[key] = self.__dict__.get(key)
+            data[key] = getattr(self, key)
         return data
 
     def to_json(self):
         data = {}
         for key in self.__fields__:
-            value = self.__dict__.get(key)
+            value = getattr(self, key)
             if isinstance(value, datetime):
                 value = iosformat(value)
             data[key] = value
@@ -187,21 +193,13 @@ class DbModel(metaclass=DbModelMeta):
 
     @classmethod
     def load(cls, **kwargs):
-
-        # if cls.__index_keys__ & set(kwargs) != cls.__index_keys__:
-        #     return instance
-
-        # query_dict = {}
-        # for key in cls.__index_keys__:
-        #     query_dict[key] = kwargs[key]
-
         doc = cls.query_one(kwargs)
         if not doc:
             return None
 
         instance = cls()
         for field in cls.__fields__:
-            instance.__dict__[field] = doc.get(field)
+            setattr(instance, field, doc.get(field))
 
         return instance
 

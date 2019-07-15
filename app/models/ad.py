@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
-from app import mongo_mapping
 from utils.db import (
     DbModel, StringField, DatetimeField,
     BaseField, FloatField
 )
 
-mongo_db = mongo_mapping.get_db('myapp')
-
 
 class Ad(DbModel):
     """Ad数据模型"""
-    __db__ = mongo_db
+    __dbname__ = 'myapp'
     __tablename__ = 'ad'
 
     ad_id = StringField(index=True)
