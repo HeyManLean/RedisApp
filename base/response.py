@@ -67,3 +67,8 @@ class StatusDef(object):
     LOGIN_REQUIRED = RetCode(10002, '用户未登录！')
     USER_EXISTS = RetCode(10010, '用户名已存在，请直接登录！')
     USER_NOT_FOUND = RetCode(10011, '用户名不存在或密码错误！')
+    USER_LIKED = RetCode(10012, '已经关注，不需重复操作！')
+    USER_UNLIKED = RetCode(10013, '未关注此用户！')
+
+    STATUS_CREATE_FAIL = RetCode(10021, '消息创建失败，请稍后重试！')
+    STATUS_DELETE_FAIL = RetCode(10022, '消息删除失败，请重试！')

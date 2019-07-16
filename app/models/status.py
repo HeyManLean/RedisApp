@@ -15,7 +15,7 @@ class Status(DbModel):
 
     status_id = IntegerField(index=True)
     user_id = IntegerField()
-    nickname = IntegerField()
+    nickname = StringField()
     content = StringField()
 
     publish_status = IntegerField()

@@ -85,6 +85,7 @@ REDIS_DBS = {
     'conf': 'redis://localhost:6379/5',
     'ip': 'redis://localhost:6379/6',
     'counter': 'redis://localhost:6379/7',
+    'lock': 'redis://localhost:6379/8',
     'test': 'redis://localhost:6379/10',
 }
 

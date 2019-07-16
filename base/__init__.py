@@ -83,12 +83,11 @@ class HttpLog(object):
         g.request_start_time = time.time()
 
     def after_request(self, response):
+        req_data = {}
         if request.method == 'GET':
             req_data = request.args.to_dict()
-        elif request.method == 'POST':
+        elif request.method in ['POST', 'DELETE', 'PUT']:
             req_data = request.json
-        else:
-            req_data = request.data
 
         req_data = json.dumps(req_data, ensure_ascii=False)
 

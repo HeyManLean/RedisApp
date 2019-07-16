@@ -56,7 +56,8 @@ class RedisMapping(object):
 
     def init_app(self, app):
         for db_name, db_uri in REDIS_DBS.items():
-            self._conn_mapping[db_name] = redis.Redis.from_url(db_uri)
+            self._conn_mapping[db_name] = redis.Redis.from_url(
+                db_uri, decode_responses=True)
         app.extensions['mongo_mapping'] = self
 
     def get_db(self, db_name):

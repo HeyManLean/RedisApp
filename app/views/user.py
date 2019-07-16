@@ -12,6 +12,9 @@ from app.services.user import (
     login_user, create_user, validate_user,
     logout_user, get_user
 )
+from app.services.status import (
+    follow_user, unfollow_user
+)
 from app.views.common import logined
 
 
@@ -69,3 +72,27 @@ class SessionResource(Resource):
         logout_user(token)
 
         return render_response()
+
+
+class FriendsResource(Resource):
+    @logined
+    @parse_params(
+        Param('other_uid', type=int, required=True)
+    )
+    def post(self):
+        ret = follow_user(request.user_id, request.params['other_uid'])
+        if not ret:
+            return render_response(StatusDef.USER_LIKED)
+        else:
+            return render_response()
+
+    @logined
+    @parse_params(
+        Param('other_uid', type=int, required=True)
+    )
+    def delete(self):
+        ret = unfollow_user(request.user_id, request.params['other_uid'])
+        if not ret:
+            return render_response(StatusDef.USER_UNLIKED)
+        else:
+            return render_response()

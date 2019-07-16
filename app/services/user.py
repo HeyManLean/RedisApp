@@ -42,8 +42,8 @@ def create_user(username, pwd_md5, nickname):
     user.login_time = user.create_time = user.update_time = now
     user.save_new()
 
-    user_db = redis_mapping.get_db('user')
-    user_db.hmset('user:' + user_id, {
+    user_db = redis_mapping.get_db('session')
+    user_db.hmset('user:%s' % user_id, {
         'user_id': user_id,
         'nickname': nickname,
         'followers': 0,

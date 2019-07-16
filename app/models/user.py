@@ -25,10 +25,7 @@ class User(DbModel):
         return {
             'user_id': self.user_id,
             'username': self.username,
-            'name': self.name,
-            'posts': self.posts,
-            'followers': self.followers,
-            'followings': self.followings,
+            'nickname': self.nickname,
             'create_time': self.create_time
         }
 
