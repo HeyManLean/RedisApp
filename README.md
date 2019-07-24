@@ -2,26 +2,27 @@
 
 ### 1. db 处理
 
-- model 操作
-- 多数据库映射处理
-- redis，mongo，mysql
+- [x] model 操作
+- [x] 多数据库映射处理
+- [x] redis，mongo，mysql
+- [ ] flask_sqlalchemy, 多库切换
 
 ### 2. request 处理
 
-- 解析参数
-- 获取必要参数，ip 等
+- [x] 解析参数
+- [x] 获取必要参数，ip 等
 
 ### 3. response 处理
 
-- 响应码定义
-- 响应内容及 cookie 处理
+- [x] 响应码定义
+- [x] 响应内容及 cookie 处理
 
 ### 4. config 配置
 
-- logging 配置
-- 数据库配置
-- celery 配置
-- 不同开发环境下的配置继承
+- [x] logging 配置
+- [x] 数据库配置
+- [ ] celery 配置
+- [ ] 不同开发环境下的配置继承
 
 ### 5. 额外辅助 web 工具
 

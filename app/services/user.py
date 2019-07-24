@@ -4,13 +4,13 @@ from datetime import datetime
 
 import config
 from utils.string import get_random_str, get_hash_str
-from utils.db import acquire_lock_with_timeout, release_lock
 from app import redis_mapping
-from app.models.user import User
 from app.const import (
     SESSION_USER_KEY, SESSION_TOKEN_KEY,
     SESSION_RECENT_ZKEY, USER_ID_COUNTER_KEY
 )
+from app.models.user import User
+from app.services.common import Lock
 
 
 def get_user(user_id: str):
@@ -21,38 +21,35 @@ def get_user(user_id: str):
 
 def create_user(username, pwd_md5, nickname):
     """创建新用户"""
-    lock_db = redis_mapping.get_db('lock')
-    lock = acquire_lock_with_timeout(lock_db, 'user:' + username, 1)
-    if not lock:
-        return None
+    key = 'user:' + username
+    with Lock(key) as lock:
+        if not lock:
+            return None
 
-    user = User.load(username=username)
-    if user:
-        release_lock(lock_db, 'user:' + username, lock)
-        return None
+        user = User.load(username=username)
+        if user:
+            return None
 
-    user_id = gen_user_id()
-    now = datetime.now()
+        user_id = gen_user_id()
+        now = datetime.now()
 
-    user = User()
-    user.user_id = user_id
-    user.username = username
-    user.nickname = nickname
-    user.password = get_hash_str(pwd_md5, config.SECRET_KEY)
-    user.login_time = user.create_time = user.update_time = now
-    user.save_new()
+        user = User()
+        user.user_id = user_id
+        user.username = username
+        user.nickname = nickname
+        user.password = get_hash_str(pwd_md5, config.SECRET_KEY)
+        user.login_time = user.create_time = user.update_time = now
+        user.save_new()
 
-    user_db = redis_mapping.get_db('session')
-    user_db.hmset('user:%s' % user_id, {
-        'user_id': user_id,
-        'nickname': nickname,
-        'followers': 0,
-        'followings': 0,
-        'posts': 0,
-        'login': datetime.timestamp(now)
-    })
-
-    release_lock(lock_db, 'user:' + username, lock)
+        user_db = redis_mapping.get_db('session')
+        user_db.hmset('user:%s' % user_id, {
+            'user_id': user_id,
+            'nickname': nickname,
+            'followers': 0,
+            'followings': 0,
+            'posts': 0,
+            'login': datetime.timestamp(now)
+        })
 
     return user
 
@@ -100,25 +97,23 @@ def login_user(user: User):
 
 def logout_user(token: str):
     """用户注销"""
-    redis_db = redis_mapping.get_db('session')
-    lockname = 'user:logout:' + token
-    lock = acquire_lock_with_timeout(redis_db, lockname, 1)
-    if not lock:
-        return False
+    key = 'user:logout:' + token
+    with Lock(key) as lock:
+        if not lock:
+            return False
 
-    user_key = SESSION_USER_KEY.format(token=token)
-    user_id = redis_db.get(user_key)
-    if not user_id:
-        return False
+        redis_db = redis_mapping.get_db('session')
+        user_key = SESSION_USER_KEY.format(token=token)
+        user_id = redis_db.get(user_key)
+        if not user_id:
+            return False
 
-    token_key = SESSION_TOKEN_KEY.format(user_id=user_id)
+        token_key = SESSION_TOKEN_KEY.format(user_id=user_id)
 
-    pipeline = redis_db.pipeline()
-    pipeline.delete(user_key)
-    pipeline.delete(token_key)
-    pipeline.execute()
-
-    release_lock(redis_db, lockname, lock)
+        pipeline = redis_db.pipeline()
+        pipeline.delete(user_key)
+        pipeline.delete(token_key)
+        pipeline.execute()
 
     return True
 

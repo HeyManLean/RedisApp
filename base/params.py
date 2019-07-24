@@ -34,6 +34,7 @@ class Param(object):
         """请求参数对象
 
         Args:
+
             name (str): 字段名
             type (class): 类型
             required (bool): 是否必填

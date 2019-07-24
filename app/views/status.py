@@ -5,7 +5,8 @@ from flask_restful import Resource
 from base.params import Param, parse_params
 from base.response import render_response, StatusDef
 from app.services.status import (
-    post_status, delete_status, get_status_contents
+    post_status, delete_status, get_status_contents,
+    filter_content
 )
 from app.views.common import logined
 
@@ -44,3 +45,28 @@ class StatusResource(Resource):
             return render_response(StatusDef.STATUS_DELETE_FAIL)
         else:
             return render_response()
+
+
+class StatusesFilterResource(Resource):
+    @parse_params(
+        Param(
+            'type',
+            default='sample',
+            choices=('sample', 'filter', 'track', 'location')
+        ),
+        Param('sample', type=int, discard=True),
+        Param('filter', discard=True),
+        Param('track', discard=True),
+        Param('location', discard=True)
+    )
+    def get(self):
+        quit = [False]
+        filter_type = request.params['type']
+        arg = request.params.get(filter_type)
+
+        data = []
+        filter_gen = filter_content(request.user_id, filter_type, arg, quit)
+        for item in filter_gen:
+            data.append(item)
+
+        return render_response(data=data)

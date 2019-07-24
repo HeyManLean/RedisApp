@@ -5,8 +5,9 @@
 import time
 import math
 import abc
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
+import binasciiG
 
 from redis.exceptions import WatchError
 
@@ -369,3 +370,69 @@ def release_lock(db, lockname, identifier, timeout=10):
         except WatchError:
             pass
     return False
+
+
+def shard_key(base, key, total_elements: int, shard_size: int):
+    """分片key
+    base: 存储的键名
+    key: 要分片的索引id, 如 uid
+    total_elements: 元素总数（最大值)
+    shard_size: 每个分片大小
+    """
+    if isinstance(key, int) or key.isdigit():
+        shard_id = int(key, 10) // shard_size
+    else:
+        shard = total_elements // shard_size
+        # 计算唯一值（假设)
+        shard_id = binascii.crc32(key.encode()) % shard
+    return '%s:%s' % (base, shard_id)
+
+
+def shard_hget(db, base, key, total_elements, shard_size):
+    shard = shard_key(base, key, total_elements, shard_size)
+    return db.hget(shard, key)
+
+
+def shard_hset(db, base, key, value, total_elements, shard_size):
+    shard = shard_key(base, key, total_elements, shard_size)
+    return db.hset(shard, key, value)
+
+
+def shard_sadd(db, base, member, total_elements, shard_size):
+    shard = shard_key(base, 'x' + str(member), total_elements, shard_size)
+    return db.sadd(shard, member)
+
+
+SHARD_SIZE = 512
+
+
+def count_size(db, session_id):
+    today = datetime.today()
+    key = 'unique:%s' % today.isoformat()
+    expected = get_expected_size(db, key, today)
+    member = int(session_id.replace('-', '')[:15], 16)
+    if shard_sadd(db, key, member, expected, SHARD_SIZE):
+        db.incr(key, 1)
+
+
+EXPECTED_SIZES = {}
+DEFAULT_SIZE = 100000
+
+
+def get_expected_size(db, key, date):
+    ex_key = key + ':expect'
+    if ex_key in EXPECTED_SIZES:
+        return EXPECTED_SIZES[ex_key]
+
+    expected = db.get(ex_key)
+    if not expected:
+        yesterday = (date - timedelta(days=1)).isoformat()
+        expected = db.get('unique:%s' % yesterday)
+        expected = int(expected or DEFAULT_SIZE)
+
+        expected = 2 ** math.ceil(math.log(expected * 1.5, 2))
+        if not db.setnx(ex_key, expected):
+            expected = db.get(ex_key)
+        EXPECTED_SIZES[ex_key] = expected
+    return expected
+    

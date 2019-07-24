@@ -3,9 +3,10 @@
 消息状态
 """
 import time
+import json
 from datetime import datetime
+import random
 
-from utils.db import acquire_lock_with_timeout, release_lock
 from app import redis_mapping
 from app.const import (
     STATUS_ID_COUNTER_KEY, STATUS_HOME_TIMELINE_SIZE,
@@ -13,6 +14,7 @@ from app.const import (
 )
 from app.models.user import User
 from app.models.status import Status, PublishStatus
+from app.services.common import Lock
 
 
 def gen_status_id():
@@ -39,6 +41,9 @@ def create_status(content, user_id):
     status.publish_status = PublishStatus.INIT.value
 
     status.save_new()
+
+    status_db = redis_mapping.get_db('status')
+    status_db.publish('streaming:status:', json.dumps(status.to_json()))
 
     user_db = redis_mapping.get_db('session')
     user_db.hincrby('user:%s' % user_id, 'posts')
@@ -147,7 +152,8 @@ def post_status(uid, content, **data):
     now = datetime.timestamp(status.create_time)
 
     redis_db = redis_mapping.get_db('status')
-    redis_db.zadd('profile:%s' % uid, {status.status_id: now})
+    pipeline = redis_db.pipeline()
+    pipeline.zadd('profile:%s' % uid, {status.status_id: now})
 
     syndicate_status(uid, status.status_id, now)
 
@@ -178,27 +184,136 @@ def syndicate_status(uid, status_id, timestamp, start=0):
 
 
 def delete_status(uid, status_id):
-    redis_db = redis_mapping.get_db('lock')
     key = 'status:%s' % status_id
-    lock = acquire_lock_with_timeout(redis_db, key, 1)
-    if not lock:
-        return False
+    with Lock(key) as lock:
+        if not lock:
+            return False
 
-    status = Status.load(status_id=status_id)
-    if not status or status.user_id != uid:
-        release_lock(redis_db, key, lock)
-        return False
+        status = Status.load(status_id=status_id)
+        if not status or status.user_id != uid:
+            return False
 
-    Status.remove_one({'status_id': status_id})
+        status_db = redis_mapping.get_db('status')
+        pipeline = status_db.pipeline()
 
-    status_db = redis_mapping.get_db('status')
-    pipeline = status_db.pipeline()
-    pipeline.zrem('profile:%s' % uid, status_id)
-    pipeline.zrem('home:%s' % uid, status_id)
-    pipeline.execute()
+        data = status.to_json()
+        data['deleted'] = True
+        pipeline.publish('streaming:status:', json.dump(data))
 
-    user_db = redis_mapping.get_db('session')
-    user_db.hincrby('user:%s' % uid, 'posts', -1)
+        pipeline.zrem('profile:%s' % uid, status_id)
+        pipeline.zrem('home:%s' % uid, status_id)
+        pipeline.execute()
 
-    release_lock(redis_db, key, lock)
+        user_db = redis_mapping.get_db('session')
+        user_db.hincrby('user:%s' % uid, 'posts', -1)
+
+        Status.remove_one({'status_id': status_id})
     return True
+
+
+def filter_content(user_id, filter_type, arg, quit):
+    """过滤内容，推荐内容"""
+    redis_db = redis_mapping.get_db('status')
+    match = create_filters(user_id, filter_type, arg)
+
+    pubsub = redis_db.pubsub()
+    pubsub.subscribe(['streaming:status:'])
+
+    for item in pubsub.listen():
+        message = item['data']
+        decoded = json.loads(message)
+
+        if match(decoded):
+            if decoded.get('deleted'):
+                yield json.dumps({
+                    'status_id': decoded['status_id'],
+                    'deleted': True
+                })
+
+            else:
+                yield message
+
+        if quit[0]:
+            break
+
+        pubsub.reset()
+
+
+def create_filters(user_id, filter_type, arg):
+    if filter_type == 'sample':
+        return SampleFilter(user_id, arg)
+    elif filter_type == 'track':
+        return TrackFilter(arg)
+    elif filter_type == 'follow':
+        return FollowFilter(arg)
+    elif filter_type == 'location':
+        return LocationFilter(arg)
+
+    raise Exception('Unknown filter')
+
+
+def SampleFilter(uid, percent):
+    percent = percent or 10
+    ids = list(range(100))
+    shuffler = random.Random(uid)
+    shuffler.shuffle(ids)
+    keep = set(ids[:max(percent, 1)])
+
+    def check(status):
+        return (status['status_id'] % 100) in keep
+
+    return check
+
+
+def TrackFilter(list_of_strings):
+    groups = []
+    for group in list_of_strings:
+        group = set(group.lower().split())
+        if group:
+            groups.append(group)
+
+    def check(status):
+        message_words = set(status['content'].lower().split())
+        for group in groups:
+            if len(group & message_words) == len(group):
+                return True
+
+        return False
+    return check
+
+
+def FollowFilter(names):
+    nset = set()
+    for name in names:
+        nset.add('@' + name.lower().lstrip('@'))
+
+    def check(status):
+        message_words = set(status['content'].lower().split())
+        message_words.add('@' + status['nickname'].lower())
+
+        return message_words & nset
+
+    return check
+
+
+def LocationFilter(list_of_boxes):
+    boxes = []
+    for start in range(0, len(list_of_boxes) - 3, 4):
+        boxes.append(
+            list(map(float, list_of_boxes[start:start + 4]))
+        )
+
+    def check(status):
+        location = status.get('location')
+        if not location:
+            return False
+
+        lat, lon = list(map(float, location.split(',')))
+        for box in boxes:
+            if (box[1] <= lat <= box[3] and
+                box[0] < lon <= box[2]):
+                return True
+
+        return False
+
+    return check
