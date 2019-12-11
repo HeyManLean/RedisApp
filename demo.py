@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
+from datetime import datetime
+
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy import create_engine, event
 
 
@@ -19,4 +23,28 @@ result = connection.execute('select * from user;')
 for item in result:
     print(item)
 
+# connection.execute(
+#     'insert into user(email, password, active, confirmed_at) '
+#     'values("readonly@gmail.com", "123456", 1, now())')
+
 connection.close()
+
+
+Base = declarative_base()
+
+
+class User(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    fullname = Column(String)
+    nickname = Column(String)
+
+    create_time = Column(DateTime, default=datetime.now)
+
+    def __repr__(self):
+        return "<User(name='%s', fullname='%s')>" % (
+            self.name, self.fullname
+        )
+
+
