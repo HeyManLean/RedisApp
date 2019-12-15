@@ -13,8 +13,8 @@ pymongo = "*"
 pymysql = "*"
 pytz = "*"
 redis = "*"
-flask-sqlalchemy = "*"
 flask-restful = "*"
+flask-sqlalchemy = "*"
 
 [requires]
 python_version = "3.7"

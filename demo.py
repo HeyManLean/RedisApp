@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # coding=utf-8
-
+import logging
 from datetime import datetime
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -8,7 +8,8 @@ from sqlalchemy import (
     create_engine, event,
     Column, Integer, String, DateTime, ForeignKey
 )
-from sqlalchemy.orm import sessionmaker, relationship, backref
+from sqlalchemy.orm import sessionmaker, relationship
+from flask_sqlalchemy import SQLAlchemy
 
 
 engine = create_engine('mysql+pymysql://web_dev:123456@localhost:3306/web_dev',
@@ -29,6 +30,7 @@ for item in result:
 # connection.execute(
 #     'insert into user(email, password, active, confirmed_at) '
 #     'values("readonly@gmail.com", "123456", 1, now())')
+
 
 connection.close()
 
