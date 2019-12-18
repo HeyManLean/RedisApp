@@ -1,6 +1,9 @@
 FROM ubuntu:18.04
 
 COPY sources.list /etc/apt/sources.list
+COPY mysql_slave.sql /data
+
+WORKDIR /data
 
 RUN apt-get update &&\
     apt-get install vim -y  &&\

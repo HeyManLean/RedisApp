@@ -20,3 +20,7 @@ cd machine_dockerfiles
 
 docker build -t maxscale:v1 --file maxscale.Dockerfile . 
 ```
+
+```sql
+grant replication client on *.* to 'maxscale'@'%' identified by '123456';
+```
