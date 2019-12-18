@@ -11,11 +11,11 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_RECORD_QUERIES = True
     SQLALCHEMY_POOL_SIZE = 10
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://web_dev:123456@localhost:3306/web_dev'
-    SQLALCHEMY_BINDS = {
-        'web_dev': 'mysql+pymysql://web_dev:123456@localhost:3306/web_dev',
-        'web_dev2': 'mysql+pymysql://web_dev:123456@localhost:3306/web_dev2',
-    }
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://web_dev:123456@localhost:4006/web_dev'
+    # SQLALCHEMY_BINDS = {
+    #     'web_dev': 'mysql+pymysql://web_dev:123456@localhost:3306/web_dev',
+    #     'web_dev2': 'mysql+pymysql://web_dev:123456@localhost:3306/web_dev2',
+    # }
 
 
 class _JsonEncoder(json.JSONEncoder):
@@ -61,7 +61,7 @@ db.Model.to_dict = model_to_dict
 
 class User(db.Model):
     __tablename__ = 'users'
-    __bind_key__ = 'web_dev'
+    # __bind_key__ = 'web_dev'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), nullable=False)
@@ -85,7 +85,7 @@ class User(db.Model):
 
 class Address(db.Model):
     __tablename__ = 'address'
-    __bind_key__ = 'web_dev2'
+    # __bind_key__ = 'web_dev2'
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(62))

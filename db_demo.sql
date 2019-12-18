@@ -1,6 +1,6 @@
 # web_dev
 use web_dev;
-create table if not exists user(
+create table if not exists users(
     id integer not null auto_increment,
     name varchar(32),
     fullname varchar(128),

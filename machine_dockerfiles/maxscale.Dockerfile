@@ -12,6 +12,8 @@ RUN apt-get update &&\
 
 RUN dpkg -i maxscale.deb
 
+EXPOSE 13306
+
 CMD [ "/bin/bash" ]
 
 
