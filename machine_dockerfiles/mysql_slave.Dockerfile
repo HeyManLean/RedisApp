@@ -12,13 +12,9 @@ RUN apt-get update &&\
 
 RUN chmod -R 755 /var/lib/mysql && \
     chmod -R 777 /var/run/mysqld && \
-    service mysql restart
+    service mysql restart &&\
+    mysql < mysql_slave.sql
 
 EXPOSE 3306
 
 CMD ["/bin/bash"]
-
-# pkill -9 mysqld
-# chmod -R 777 /var/run/mysqld
-# chmod -R 755 /var/lib/mysql
-# service mysql restart
