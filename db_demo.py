@@ -3,7 +3,7 @@
 from datetime import datetime, date
 
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, jsonify, json
+from flask import Flask, jsonify, json, request
 
 
 class Config:
@@ -95,7 +95,7 @@ class Address(db.Model):
 
 
 @app.route('/users')
-def users():
+def get_users():
     data = []
 
     for user in User.query.all():
@@ -105,6 +105,20 @@ def users():
         'data': data,
         'bind_info': ''
     }
+
+
+@app.route('/users/add')
+def add_user():
+    params = request.args
+    user = User(
+        name=params['name'],
+        nickname=params['name'],
+        fullname=params['name'])
+
+    db.session.add(user)
+    db.session.commit()
+
+    return user.to_dict()
 
 
 if __name__ == '__main__':
