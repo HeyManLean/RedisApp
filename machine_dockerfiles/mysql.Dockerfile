@@ -6,7 +6,9 @@ RUN apt-get update &&\
     apt-get install vim -y  &&\
     apt-get install net-tools -y &&\
     apt-get install inetutils-ping -y &&\
-    apt-get install mysql-server -y &&\
+    apt-get install curl -y
+
+RUN apt-get install mysql-server -y &&\
     apt-get install mysql-client -y &&\
     apt-get install libmysqlclient-dev -y
 
